@@ -93,7 +93,7 @@
       transition: background-color 0.2s ease, box-shadow 0.2s ease;
     }
 
-    /* --- Radiating Side RGB Strip (Positioned Lower, 4 LEDs per side) --- */
+    /* --- Radiating Side RGB Strip (Lowered Position) --- */
     .side-glow {
       position: absolute; top: 110px; width: 32px; height: 200px; border-radius: 26px;
       z-index: 2; pointer-events: none; filter: blur(12px); opacity: 0.95; transition: opacity 0.3s;
@@ -174,12 +174,12 @@
     }
     @keyframes animFlow4LEDCascade {
       0%   { clip-path: inset(0 0 100% 0); opacity: 0; }
-      12%  { clip-path: inset(0 0 75% 0);  opacity: 1; } /* LED 1 on */
-      28%  { clip-path: inset(0 0 50% 0);  opacity: 1; } /* LED 1+2 on */
-      48%  { clip-path: inset(0 0 25% 0);  opacity: 1; } /* LED 1+2+3 on */
-      68%  { clip-path: inset(0 0 0% 0);   opacity: 1; } /* All 4 LEDs on */
-      88%  { clip-path: inset(0 0 0% 0);   opacity: 1; } /* Hold */
-      98%  { clip-path: inset(0 0 0% 0);   opacity: 0; } /* Sudden Cut */
+      12%  { clip-path: inset(0 0 75% 0);  opacity: 1; }
+      28%  { clip-path: inset(0 0 50% 0);  opacity: 1; }
+      48%  { clip-path: inset(0 0 25% 0);  opacity: 1; }
+      68%  { clip-path: inset(0 0 0% 0);   opacity: 1; }
+      88%  { clip-path: inset(0 0 0% 0);   opacity: 1; }
+      98%  { clip-path: inset(0 0 0% 0);   opacity: 0; }
       100% { clip-path: inset(0 0 100% 0); opacity: 0; }
     }
     @keyframes animFlowHueCycle {
@@ -190,7 +190,7 @@
       100% { filter: blur(12px) hue-rotate(360deg) drop-shadow(0 0 12px #ff0044); }
     }
 
-    /* 6. Color Cycle Breathing: Very Slow Relaxed Breath Cycle (28s) */
+    /* 6. Color Cycle Breathing: Slow Relaxed Breath Cycle (28s) */
     .glow-breathing {
       animation: animColorBreathingSuperSlow 28s ease-in-out infinite;
     }
@@ -269,7 +269,7 @@
     <div class="card" style="padding: 10px;">
       <div class="mouse-stage-wrapper">
         <div class="mouse-stage">
-          <!-- Radiating Side RGB Strips (4 LEDs per side) -->
+          <!-- Radiating Side RGB Strips -->
           <div class="side-glow left glow-off" id="glow-left"></div>
           <div class="side-glow right glow-off" id="glow-right"></div>
 
@@ -490,8 +490,6 @@
   let activeStreamerMode = 6;
   let currentDpis = [800, 1600, 2400, 3200, 5000, 12000];
   let activeDpiIndex = 1;
-  let isBusBusy = false;
-  let pendingReportResolve = null;
 
   function updateDpiLedGlow(stageIndex) {
     activeDpiIndex = stageIndex;
@@ -587,34 +585,23 @@
     document.getElementById(`dpi-val-${idx}`).innerText = `${val} DPI`;
   }
 
-  // --- Real-time Hardware Event Dispatcher ---
+  // --- Real-time Hardware Event Listener ---
   function setupHardwareListener() {
     if (!hidDevice) return;
     hidDevice.oninputreport = (event) => {
       const data = new Uint8Array(event.data.buffer);
-      
-      if (pendingReportResolve) {
-        pendingReportResolve(data);
-        return;
-      }
 
-      // 1. Live DPI & Polling Rate switch notification from physical button
-      if (data[0] === 170 && data[1] === 250 && data[8] === 16) {
+      // Only parse explicit hardware state broadcasts (ignore all motion/pointer reports)
+      if (data[0] === 0xAA && data[1] === 0xFA && data[8] === 0x10) {
         const newDpiStage = data[9] - 1;
         const rateMap = { 0: 125, 1: 250, 2: 500, 3: 1000 };
         const newRate = rateMap[data[10] - 1] || 1000;
         updateDpiLedGlow(newDpiStage);
         const rateRadio = document.querySelector(`input[name="polling"][value="${newRate}"]`);
         if (rateRadio) rateRadio.checked = true;
-      }
-      
-      // 2. Live Battery Update notification
-      if (data[0] === 170 && data[1] === 48) {
+      } else if (data[0] === 0xAA && data[1] === 0x30) {
         document.getElementById("tele-bat").innerText = `${data[8]}% ${data[9] ? "(Charging)" : ""}`;
-      }
-
-      // 3. Direct RGB Switch Notification (0xAA 0x21 / 170 33)
-      if (data[0] === 170 && data[1] === 33) {
+      } else if (data[0] === 0xAA && data[1] === 0x21) {
         const newMode = data[11] !== undefined ? data[11] : data[8];
         if (newMode >= 0 && newMode <= 6) {
           updateSideGlowClass(newMode);
@@ -625,19 +612,24 @@
     };
   }
 
-  // --- Clean Non-Blocking USB/RF Communication ---
-  async function sendAndReceive(packet, timeoutMs = 350) {
+  // --- Strict Non-Colliding USB/RF Read ---
+  async function sendAndReceive(packet, expectedCmd, timeoutMs = 350) {
     if (!hidDevice || !hidDevice.opened) return null;
     return new Promise(async (resolve) => {
       let timer = null;
-      pendingReportResolve = (data) => {
-        clearTimeout(timer);
-        pendingReportResolve = null;
-        resolve(data);
+      const onReport = (event) => {
+        const data = new Uint8Array(event.data.buffer);
+        // Strictly ensure packet starts with 0xAA and matches our command ID
+        if (data[0] === 0xAA && data[1] === expectedCmd) {
+          clearTimeout(timer);
+          hidDevice.removeEventListener("inputreport", onReport);
+          resolve(data);
+        }
       };
 
+      hidDevice.addEventListener("inputreport", onReport);
       timer = setTimeout(() => {
-        pendingReportResolve = null;
+        hidDevice.removeEventListener("inputreport", onReport);
         resolve(null);
       }, timeoutMs);
 
@@ -646,7 +638,7 @@
         await hidDevice.sendReport(0, reportData);
       } catch (err) {
         clearTimeout(timer);
-        pendingReportResolve = null;
+        hidDevice.removeEventListener("inputreport", onReport);
         resolve(null);
       }
     });
@@ -689,103 +681,98 @@
   }
 
   async function syncHardwareState() {
-    if (!hidDevice || !hidDevice.opened || isBusBusy) return;
-    isBusBusy = true;
+    if (!hidDevice || !hidDevice.opened) return;
 
-    try {
-      // 1. Query Config (0x0E)
-      const cfgPacket = new Array(65).fill(0);
-      cfgPacket[1] = 0x55; cfgPacket[2] = 0x0E; cfgPacket[3] = 0xA5; cfgPacket[4] = 0x0B; cfgPacket[5] = 0x30;
-      cfgPacket[6] = 0x01; cfgPacket[7] = 0x01; cfgPacket[8] = 0x01;
-      const cfgRes = await sendAndReceive(cfgPacket);
+    // 1. Query Config (0x0E)
+    const cfgPacket = new Array(65).fill(0);
+    cfgPacket[1] = 0x55; cfgPacket[2] = 0x0E; cfgPacket[3] = 0xA5; cfgPacket[4] = 0x0B; cfgPacket[5] = 0x30;
+    cfgPacket[6] = 0x01; cfgPacket[7] = 0x01; cfgPacket[8] = 0x01;
+    const cfgRes = await sendAndReceive(cfgPacket, 0x0E);
 
-      // 2. Query Buttons (0x08)
-      const keyPacket = new Array(65).fill(0);
-      keyPacket[1] = 0x55; keyPacket[2] = 0x08; keyPacket[3] = 0xA5; keyPacket[4] = 0x0B; keyPacket[5] = 0x20;
-      const keyRes = await sendAndReceive(keyPacket);
+    // 2. Query Buttons (0x08)
+    const keyPacket = new Array(65).fill(0);
+    keyPacket[1] = 0x55; keyPacket[2] = 0x08; keyPacket[3] = 0xA5; keyPacket[4] = 0x0B; keyPacket[5] = 0x20;
+    const keyRes = await sendAndReceive(keyPacket, 0x08);
 
-      // 3. Query Battery (0x30)
-      const batPacket = new Array(65).fill(0);
-      batPacket[1] = 0x55; batPacket[2] = 0x30; batPacket[3] = 0xA5; batPacket[4] = 0x0B; batPacket[5] = 0x2E;
-      batPacket[6] = 0x01; batPacket[7] = 0x01; batPacket[8] = 0x01;
-      const batRes = await sendAndReceive(batPacket);
+    // 3. Query Battery (0x30)
+    const batPacket = new Array(65).fill(0);
+    batPacket[1] = 0x55; batPacket[2] = 0x30; batPacket[3] = 0xA5; batPacket[4] = 0x0B; batPacket[5] = 0x2E;
+    batPacket[6] = 0x01; batPacket[7] = 0x01; batPacket[8] = 0x01;
+    const batRes = await sendAndReceive(batPacket, 0x30);
 
-      // 4. Query Firmware (0x03)
-      const fwPacket = new Array(65).fill(0);
-      fwPacket[1] = 0x55; fwPacket[2] = 0x03;
-      const fwRes = await sendAndReceive(fwPacket);
+    // 4. Query Firmware (0x03)
+    const fwPacket = new Array(65).fill(0);
+    fwPacket[1] = 0x55; fwPacket[2] = 0x03;
+    const fwRes = await sendAndReceive(fwPacket, 0x03);
 
-      if (fwRes && fwRes.length >= 26) {
-        document.getElementById("tele-fw").innerText = `${String.fromCharCode(fwRes[23])}.${String.fromCharCode(fwRes[24])}.${String.fromCharCode(fwRes[25])}`;
-      }
-      if (batRes && batRes[0] === 0xAA && batRes[1] === 0x30) {
-        document.getElementById("tele-bat").innerText = `${batRes[8]}% ${batRes[9] ? "(Charging)" : ""}`;
-      }
+    if (fwRes && fwRes.length >= 26) {
+      document.getElementById("tele-fw").innerText = `${String.fromCharCode(fwRes[23])}.${String.fromCharCode(fwRes[24])}.${String.fromCharCode(fwRes[25])}`;
+    }
+    if (batRes && batRes[0] === 0xAA && batRes[1] === 0x30) {
+      document.getElementById("tele-bat").innerText = `${batRes[8]}% ${batRes[9] ? "(Charging)" : ""}`;
+    }
 
-      if (cfgRes && cfgRes.length >= 55) {
-        updateSideGlowClass(cfgRes[9]);
-        const streamerRadio = document.querySelector(`input[name="streamer_mode"][value="${cfgRes[9]}"]`);
-        if (streamerRadio) streamerRadio.checked = true;
+    if (cfgRes && cfgRes.length >= 55) {
+      updateSideGlowClass(cfgRes[9]);
+      const streamerRadio = document.querySelector(`input[name="streamer_mode"][value="${cfgRes[9]}"]`);
+      if (streamerRadio) streamerRadio.checked = true;
 
-        const rateMap = { 0: 125, 1: 250, 2: 500, 3: 1000 };
-        const rateVal = rateMap[cfgRes[10] - 1] || 1000;
-        const rateRadio = document.querySelector(`input[name="polling"][value="${rateVal}"]`);
-        if (rateRadio) rateRadio.checked = true;
+      const rateMap = { 0: 125, 1: 250, 2: 500, 3: 1000 };
+      const rateVal = rateMap[cfgRes[10] - 1] || 1000;
+      const rateRadio = document.querySelector(`input[name="polling"][value="${rateVal}"]`);
+      if (rateRadio) rateRadio.checked = true;
 
-        const activeStage = Math.max(0, cfgRes[12] - 1);
-        updateDpiLedGlow(activeStage);
+      const activeStage = Math.max(0, cfgRes[12] - 1);
+      updateDpiLedGlow(activeStage);
 
-        for (let i = 0; i < 6; i++) {
-          const dpi = cfgRes[13 + i * 2] | (cfgRes[14 + i * 2] << 8);
-          if (dpi > 0) {
-            currentDpis[i] = dpi;
-            document.getElementById(`dpi-slider-${i}`).value = dpi;
-            document.getElementById(`dpi-val-${i}`).innerText = `${dpi} DPI`;
-          }
+      for (let i = 0; i < 6; i++) {
+        const dpi = cfgRes[13 + i * 2] | (cfgRes[14 + i * 2] << 8);
+        if (dpi > 0) {
+          currentDpis[i] = dpi;
+          document.getElementById(`dpi-slider-${i}`).value = dpi;
+          document.getElementById(`dpi-val-${i}`).innerText = `${dpi} DPI`;
         }
-
-        const sensorFlag = cfgRes[50];
-        document.getElementById("chk-motion-sync").checked = !!(sensorFlag & 0x20);
-        document.getElementById("chk-ripple").checked = !!(sensorFlag & 0x10);
-        document.getElementById("chk-linesnap").checked = !!(sensorFlag & 0x01);
-        document.getElementById("chk-esports").checked = !!(cfgRes[53] & 0x01);
-
-        const lodRadio = document.querySelector(`input[name="lod"][value="${cfgRes[49]}"]`);
-        if (lodRadio) lodRadio.checked = true;
-        document.getElementById("num-debounce").value = cfgRes[51];
-        document.getElementById("num-sleep").value = cfgRes[52];
-        document.getElementById("chk-invert-scroll").checked = !!cfgRes[48];
-        document.getElementById("chk-move-wake").checked = !!(cfgRes[54] & 0x01);
       }
 
-      if (keyRes && keyRes.length >= 32 && keyRes[0] === 0xAA && keyRes[1] === 0x08) {
-        const kData = keyRes.slice(8);
-        for (let i = 0; i < 6; i++) {
-          const t = kData[4 * i], c1 = kData[4 * i + 1], c2 = kData[4 * i + 2], c3 = kData[4 * i + 3];
-          const select = document.getElementById(`btn-select-${i}`);
-          for (const [name, bytes] of Object.entries(KEY_BINDINGS)) {
-            if (bytes[0] === t && bytes[1] === c1 && bytes[2] === c2 && bytes[3] === c3) {
-              select.value = name;
-              break;
-            }
+      const sensorFlag = cfgRes[50];
+      document.getElementById("chk-motion-sync").checked = !!(sensorFlag & 0x20);
+      document.getElementById("chk-ripple").checked = !!(sensorFlag & 0x10);
+      document.getElementById("chk-linesnap").checked = !!(sensorFlag & 0x01);
+      document.getElementById("chk-esports").checked = !!(cfgRes[53] & 0x01);
+
+      const lodRadio = document.querySelector(`input[name="lod"][value="${cfgRes[49]}"]`);
+      if (lodRadio) lodRadio.checked = true;
+      document.getElementById("num-debounce").value = cfgRes[51];
+      document.getElementById("num-sleep").value = cfgRes[52];
+      document.getElementById("chk-invert-scroll").checked = !!cfgRes[48];
+      document.getElementById("chk-move-wake").checked = !!(cfgRes[54] & 0x01);
+    }
+
+    if (keyRes && keyRes.length >= 32 && keyRes[0] === 0xAA && keyRes[1] === 0x08) {
+      const kData = keyRes.slice(8);
+      for (let i = 0; i < 6; i++) {
+        const t = kData[4 * i], c1 = kData[4 * i + 1], c2 = kData[4 * i + 2], c3 = kData[4 * i + 3];
+        const select = document.getElementById(`btn-select-${i}`);
+        for (const [name, bytes] of Object.entries(KEY_BINDINGS)) {
+          if (bytes[0] === t && bytes[1] === c1 && bytes[2] === c2 && bytes[3] === c3) {
+            select.value = name;
+            break;
           }
         }
       }
-    } finally {
-      isBusBusy = false;
     }
   }
 
   async function testStreamerMode(modeVal) {
     updateSideGlowClass(modeVal);
-    if (!hidDevice || !hidDevice.opened || isBusBusy) return;
+    if (!hidDevice || !hidDevice.opened) return;
     try {
       const livePacket = new Array(65).fill(0);
       livePacket[1] = 0x55; livePacket[2] = 0x21; livePacket[5] = 0x03; livePacket[11] = modeVal;
       const reportData = new Uint8Array(livePacket.slice(1));
       await hidDevice.sendReport(0, reportData);
     } catch (e) {
-      console.warn("Live test report skipped:", e);
+      console.warn("Live test error:", e);
     }
   }
 
@@ -794,49 +781,43 @@
       alert("Mouse is not connected.");
       return;
     }
-    if (isBusBusy) return;
-    isBusBusy = true;
 
-    try {
-      const pollingMap = { 125: 1, 250: 2, 500: 3, 1000: 4 };
-      const selectedRate = parseInt(document.querySelector('input[name="polling"]:checked').value);
-      const activeStage = parseInt(document.querySelector('input[name="active_dpi"]:checked').value);
-      const lodVal = parseInt(document.querySelector('input[name="lod"]:checked').value);
-      const debounceVal = parseInt(document.getElementById("num-debounce").value);
-      const sleepVal = parseInt(document.getElementById("num-sleep").value);
+    const pollingMap = { 125: 1, 250: 2, 500: 3, 1000: 4 };
+    const selectedRate = parseInt(document.querySelector('input[name="polling"]:checked').value);
+    const activeStage = parseInt(document.querySelector('input[name="active_dpi"]:checked').value);
+    const lodVal = parseInt(document.querySelector('input[name="lod"]:checked').value);
+    const debounceVal = parseInt(document.getElementById("num-debounce").value);
+    const sleepVal = parseInt(document.getElementById("num-sleep").value);
 
-      let sensorFlag = 0;
-      if (document.getElementById("chk-linesnap").checked) sensorFlag |= 0x01;
-      if (document.getElementById("chk-ripple").checked) sensorFlag |= 0x10;
-      if (document.getElementById("chk-motion-sync").checked) sensorFlag |= 0x20;
+    let sensorFlag = 0;
+    if (document.getElementById("chk-linesnap").checked) sensorFlag |= 0x01;
+    if (document.getElementById("chk-ripple").checked) sensorFlag |= 0x10;
+    if (document.getElementById("chk-motion-sync").checked) sensorFlag |= 0x20;
 
-      const pkt = new Array(65).fill(0);
-      pkt[1] = 0x55; pkt[2] = 0x0F; pkt[3] = 0xAE; pkt[4] = 0x0A; pkt[5] = 0x30;
-      pkt[6] = 0x01; pkt[7] = 0x01; pkt[8] = 0x01;
-      pkt[10] = activeStreamerMode;
-      pkt[11] = pollingMap[selectedRate] || 4;
-      pkt[12] = 6;
-      pkt[13] = activeStage + 1;
+    const pkt = new Array(65).fill(0);
+    pkt[1] = 0x55; pkt[2] = 0x0F; pkt[3] = 0xAE; pkt[4] = 0x0A; pkt[5] = 0x30;
+    pkt[6] = 0x01; pkt[7] = 0x01; pkt[8] = 0x01;
+    pkt[10] = activeStreamerMode;
+    pkt[11] = pollingMap[selectedRate] || 4;
+    pkt[12] = 6;
+    pkt[13] = activeStage + 1;
 
-      for (let i = 0; i < 6; i++) {
-        pkt[14 + i * 2] = currentDpis[i] & 0xFF;
-        pkt[15 + i * 2] = (currentDpis[i] >> 8) & 0xFF;
-      }
-
-      pkt[49] = document.getElementById("chk-invert-scroll").checked ? 1 : 0;
-      pkt[50] = lodVal;
-      pkt[51] = sensorFlag;
-      pkt[52] = debounceVal;
-      pkt[53] = sleepVal;
-      pkt[54] = document.getElementById("chk-esports").checked ? 1 : 0;
-      pkt[55] = document.getElementById("chk-move-wake").checked ? 1 : 0;
-
-      const reportData = new Uint8Array(pkt.slice(1));
-      await hidDevice.sendReport(0, reportData);
-      alert("Configuration successfully saved to mouse memory.");
-    } finally {
-      isBusBusy = false;
+    for (let i = 0; i < 6; i++) {
+      pkt[14 + i * 2] = currentDpis[i] & 0xFF;
+      pkt[15 + i * 2] = (currentDpis[i] >> 8) & 0xFF;
     }
+
+    pkt[49] = document.getElementById("chk-invert-scroll").checked ? 1 : 0;
+    pkt[50] = lodVal;
+    pkt[51] = sensorFlag;
+    pkt[52] = debounceVal;
+    pkt[53] = sleepVal;
+    pkt[54] = document.getElementById("chk-esports").checked ? 1 : 0;
+    pkt[55] = document.getElementById("chk-move-wake").checked ? 1 : 0;
+
+    const reportData = new Uint8Array(pkt.slice(1));
+    await hidDevice.sendReport(0, reportData);
+    alert("Configuration successfully saved to mouse memory.");
   }
 
   async function writeButtonMappings() {
@@ -844,28 +825,23 @@
       alert("Mouse is not connected.");
       return;
     }
-    if (isBusBusy) return;
-    isBusBusy = true;
 
-    try {
-      const pkt = new Array(64).fill(0);
-      pkt[1] = 0x55; pkt[2] = 0x09; pkt[3] = 0xA5; pkt[4] = 0x22; pkt[5] = 0x20;
+    // Must be 65 elements so that slice(1) outputs exactly 64 bytes
+    const pkt = new Array(65).fill(0);
+    pkt[1] = 0x55; pkt[2] = 0x09; pkt[3] = 0xA5; pkt[4] = 0x22; pkt[5] = 0x20;
 
-      for (let i = 0; i < 6; i++) {
-        const selected = document.getElementById(`btn-select-${i}`).value;
-        const bytes = KEY_BINDINGS[selected] || [32, 0, 0, 0];
-        pkt[9 + i * 4] = bytes[0];
-        pkt[10 + i * 4] = bytes[1];
-        pkt[11 + i * 4] = bytes[2];
-        pkt[12 + i * 4] = bytes[3];
-      }
-
-      const reportData = new Uint8Array(pkt.slice(1));
-      await hidDevice.sendReport(0, reportData);
-      alert("Button mappings saved to mouse EEPROM.");
-    } finally {
-      isBusBusy = false;
+    for (let i = 0; i < 6; i++) {
+      const selected = document.getElementById(`btn-select-${i}`).value;
+      const bytes = KEY_BINDINGS[selected] || [32, 0, 0, 0];
+      pkt[9 + i * 4] = bytes[0];
+      pkt[10 + i * 4] = bytes[1];
+      pkt[11 + i * 4] = bytes[2];
+      pkt[12 + i * 4] = bytes[3];
     }
+
+    const reportData = new Uint8Array(pkt.slice(1));
+    await hidDevice.sendReport(0, reportData);
+    alert("Button mappings saved to mouse EEPROM.");
   }
 
   window.addEventListener("DOMContentLoaded", initUI);
