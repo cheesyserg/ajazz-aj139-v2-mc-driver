@@ -28,7 +28,7 @@
     }
 
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
-    body { background-color: var(--bg-canvas); color: var(--text-bright); min-height: 100vh; display: flex; flex-direction: column; }
+    body { background-color: var(--bg-canvas); color: var(--text-bright); min-height: 100vh; display: flex; flex-direction: column; overflow-x: hidden; }
 
     /* Top Navigation Header */
     header {
@@ -105,12 +105,12 @@
     .btn.primary:hover { background: var(--accent-cyan-hover); box-shadow: 0 0 16px var(--accent-glow); }
 
     /* Main Content Layout */
-    main { width: 100%; max-width: 1200px; margin: 0 auto; padding: 24px 20px 80px; flex: 1; }
+    main { width: 100%; max-width: 1280px; margin: 0 auto; padding: 24px 20px 80px; flex: 1; }
 
     .app-layout {
       display: grid;
-      grid-template-columns: 500px 1fr;
-      gap: 24px;
+      grid-template-columns: 520px 1fr;
+      gap: 28px;
       align-items: start;
     }
 
@@ -119,22 +119,23 @@
       background: var(--bg-panel);
       border: 1px solid var(--border-color);
       border-radius: 16px;
-      padding: 20px;
+      padding: 24px;
       position: sticky;
       top: 80px;
+      overflow: visible; /* Fixes the cut-off bug */
     }
-    .stage-header { margin-bottom: 12px; }
-    .stage-title { font-size: 14px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; color: var(--text-bright); }
-    .stage-desc { font-size: 12px; color: var(--text-muted); margin-top: 2px; }
+    .stage-header { margin-bottom: 24px; }
+    .stage-title { font-size: 15px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; color: var(--text-bright); }
+    .stage-desc { font-size: 12px; color: var(--text-muted); margin-top: 4px; }
 
     .stage-container {
       position: relative;
       width: 100%;
-      height: 480px;
+      height: 460px;
       display: flex;
       justify-content: center;
       align-items: center;
-      overflow: hidden;
+      /* overflow: hidden is explicitly removed so anchors can overlap the padding safely */
     }
     .mouse-viewport { position: relative; width: 460px; height: 460px; }
     
@@ -182,21 +183,12 @@
     }
 
     .glow-chaser {
-      background: repeating-linear-gradient(180deg,
-        #ff0044 0px, #ff0044 14px,
-        transparent 14px, transparent 24px,
-        #00ff55 24px, #00ff55 38px,
-        transparent 38px, transparent 48px,
-        #ffee00 48px, #ffee00 62px,
-        transparent 62px, transparent 72px,
-        #00f0ff 72px, #00f0ff 86px,
-        transparent 86px, transparent 96px
-      );
+      background: repeating-linear-gradient(180deg, #ff0044 0px, #ff0044 14px, transparent 14px, transparent 24px, #00ff55 24px, #00ff55 38px, transparent 38px, transparent 48px, #ffee00 48px, #ffee00 62px, transparent 62px, transparent 72px, #00f0ff 72px, #00f0ff 86px, transparent 86px, transparent 96px);
       background-size: 100% 200%;
       animation: animChaserBounceFast 2.2s ease-in-out infinite, animChaserHueFast 0.5s linear infinite;
     }
     @keyframes animChaserBounceFast { 0% { background-position: 0% 0%; } 50% { background-position: 0% 100%; } 100% { background-position: 0% 0%; } }
-    @keyframes animChaserHueFast { 0% { filter: blur(11px) hue-rotate(0deg); } 100% { filter: blur(11px) hue-rotate(360deg); } }
+    @keyframes animChaserHueFast { 0% { filter: blur(11px) hue-rotate(0deg) drop-shadow(0 0 12px #ff0044); } 100% { filter: blur(11px) hue-rotate(360deg) drop-shadow(0 0 12px #00ff55); } }
 
     .glow-yoyo {
       background: linear-gradient(180deg, #00f0ff 0%, #00f0ff 80%, transparent 100%);
@@ -210,23 +202,8 @@
       background: #ff0044;
       animation: animFlow4LEDCascade 0.95s cubic-bezier(0.2, 0.9, 0.3, 1) infinite, animFlowHueCycle 3.8s steps(4) infinite;
     }
-    @keyframes animFlow4LEDCascade {
-      0% { clip-path: inset(0 0 100% 0); opacity: 0; }
-      12% { clip-path: inset(0 0 75% 0); opacity: 1; }
-      28% { clip-path: inset(0 0 50% 0); opacity: 1; }
-      48% { clip-path: inset(0 0 25% 0); opacity: 1; }
-      68% { clip-path: inset(0 0 0% 0); opacity: 1; }
-      88% { clip-path: inset(0 0 0% 0); opacity: 1; }
-      98% { clip-path: inset(0 0 0% 0); opacity: 0; }
-      100% { clip-path: inset(0 0 100% 0); opacity: 0; }
-    }
-    @keyframes animFlowHueCycle {
-      0% { filter: blur(12px) hue-rotate(0deg); }
-      25% { filter: blur(12px) hue-rotate(90deg); }
-      50% { filter: blur(12px) hue-rotate(180deg); }
-      75% { filter: blur(12px) hue-rotate(270deg); }
-      100% { filter: blur(12px) hue-rotate(360deg); }
-    }
+    @keyframes animFlow4LEDCascade { 0% { clip-path: inset(0 0 100% 0); opacity: 0; } 12% { clip-path: inset(0 0 75% 0); opacity: 1; } 28% { clip-path: inset(0 0 50% 0); opacity: 1; } 48% { clip-path: inset(0 0 25% 0); opacity: 1; } 68% { clip-path: inset(0 0 0% 0); opacity: 1; } 88% { clip-path: inset(0 0 0% 0); opacity: 1; } 98% { clip-path: inset(0 0 0% 0); opacity: 0; } 100% { clip-path: inset(0 0 100% 0); opacity: 0; } }
+    @keyframes animFlowHueCycle { 0% { filter: blur(12px) hue-rotate(0deg); } 25% { filter: blur(12px) hue-rotate(90deg); } 50% { filter: blur(12px) hue-rotate(180deg); } 75% { filter: blur(12px) hue-rotate(270deg); } 100% { filter: blur(12px) hue-rotate(360deg); } }
 
     .glow-breathing {
       animation: animColorBreathingSuperSlow 28s ease-in-out infinite;
@@ -242,25 +219,26 @@
 
     .glow-off { display: none !important; }
 
-    /* Button Selectors on Visual Stage */
+    /* SVG Lines & Floating Anchors */
     .stage-svg { position: absolute; top: 0; left: 0; width: 460px; height: 460px; z-index: 5; pointer-events: none; }
     .btn-anchor {
-      position: absolute; z-index: 12; display: flex; flex-direction: column; gap: 2px;
+      position: absolute; z-index: 12; display: flex; flex-direction: column; gap: 3px;
       background: rgba(19, 24, 34, 0.95); border: 1px solid var(--border-color);
-      border-radius: 8px; padding: 5px 8px; box-shadow: 0 8px 20px rgba(0,0,0,0.6);
+      border-radius: 8px; padding: 6px 10px; box-shadow: 0 8px 20px rgba(0,0,0,0.6);
     }
     .btn-anchor-label { font-size: 10px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; }
     .btn-anchor select {
       background: var(--bg-canvas); color: var(--text-bright); border: 1px solid var(--border-color);
-      border-radius: 4px; padding: 4px 6px; font-size: 11px; outline: none;
+      border-radius: 4px; padding: 4px 6px; font-size: 11px; outline: none; cursor: pointer;
     }
 
-    #anchor-0 { top: 75px; left: -10px; width: 135px; }
-    #anchor-4 { top: 165px; left: -15px; width: 135px; }
-    #anchor-3 { top: 235px; left: -15px; width: 135px; }
-    #anchor-1 { top: 75px; right: -10px; width: 135px; }
-    #anchor-2 { top: 140px; right: -15px; width: 135px; }
-    #anchor-5 { top: 205px; right: -15px; width: 135px; }
+    /* Fixed Anchors to prevent cut off */
+    #anchor-0 { top: 75px; left: -25px; width: 135px; }
+    #anchor-4 { top: 165px; left: -30px; width: 135px; }
+    #anchor-3 { top: 235px; left: -30px; width: 135px; }
+    #anchor-1 { top: 75px; right: -25px; width: 135px; }
+    #anchor-2 { top: 140px; right: -30px; width: 135px; }
+    #anchor-5 { top: 205px; right: -30px; width: 135px; }
 
     /* Right Control Deck */
     .deck-container { display: flex; flex-direction: column; gap: 16px; }
@@ -364,7 +342,6 @@
 </head>
 <body>
 
-  <!-- App Header -->
   <header>
     <div class="brand-group">
       <div class="brand-title">AJAZZ <span>CONTROL</span></div>
@@ -385,7 +362,6 @@
     </div>
   </header>
 
-  <!-- Main View -->
   <main>
     <div class="app-layout">
       <!-- Left Column: Device Visualizer -->
@@ -403,17 +379,17 @@
 
             <svg class="stage-svg" viewBox="0 0 460 460">
               <circle cx="180" cy="120" r="4" fill="#00f0ff"/>
-              <polyline points="120,98 150,98 180,120" stroke="#00f0ff" stroke-width="1.5" fill="none"/>
+              <polyline points="110,98 150,98 180,120" stroke="#00f0ff" stroke-width="1.5" fill="none"/>
               <circle cx="132" cy="190" r="4" fill="#00f0ff"/>
-              <polyline points="115,182 122,182 132,190" stroke="#00f0ff" stroke-width="1.5" fill="none"/>
+              <polyline points="105,182 122,182 132,190" stroke="#00f0ff" stroke-width="1.5" fill="none"/>
               <circle cx="138" cy="242" r="4" fill="#00f0ff"/>
-              <polyline points="115,250 128,250 138,242" stroke="#00f0ff" stroke-width="1.5" fill="none"/>
+              <polyline points="105,250 128,250 138,242" stroke="#00f0ff" stroke-width="1.5" fill="none"/>
               <circle cx="280" cy="120" r="4" fill="#00f0ff"/>
-              <polyline points="340,98 310,98 280,120" stroke="#00f0ff" stroke-width="1.5" fill="none"/>
+              <polyline points="350,98 310,98 280,120" stroke="#00f0ff" stroke-width="1.5" fill="none"/>
               <circle cx="230" cy="115" r="4" fill="#00f0ff"/>
-              <polyline points="345,158 285,158 230,115" stroke="#00f0ff" stroke-width="1.5" fill="none"/>
+              <polyline points="355,158 285,158 230,115" stroke="#00f0ff" stroke-width="1.5" fill="none"/>
               <circle cx="230" cy="180" r="4" fill="#00f0ff"/>
-              <polyline points="345,220 285,220 230,180" stroke="#00f0ff" stroke-width="1.5" fill="none"/>
+              <polyline points="355,220 285,220 230,180" stroke="#00f0ff" stroke-width="1.5" fill="none"/>
             </svg>
 
             <div class="btn-anchor" id="anchor-0"><span class="btn-anchor-label">1. Left Click</span><select id="btn-select-0"></select></div>
@@ -630,7 +606,7 @@
     { label: "Yo-Yo Ball", desc: "Top-to-bottom rapid color wipe per cycle", val: 3, class: "glow-yoyo", preview: "linear-gradient(90deg, #00f0ff, transparent)" },
     { label: "Directional Flow", desc: "4-LED sequential cascade with sudden reset", val: 4, class: "glow-flow", preview: "linear-gradient(90deg, #ff0044, #00f0ff, #ffee00)" },
     { label: "Color Breathing", desc: "Relaxed 28s multi-color breath cycle", val: 5, class: "glow-breathing", preview: "linear-gradient(90deg, #ff0044, #00f0ff)" },
-    { label: "Turn Off Lighting", desc: "Completely disable side diffuser LEDs", val: 6, class: "glow-off", preview: "#1f2533" }
+    { label: "Turn Off Lighting", desc: "Completely disable side diffuser LEDs", val: 6, class: "glow-off", preview: "#222" }
   ];
 
   let hidDevice = null;
@@ -639,6 +615,8 @@
   let activeDpiIndex = 1;
   let activePolling = 1000;
   let activeLOD = 1;
+  let isBusBusy = false;
+  let lightSyncTimer = null;
 
   function showToast(msg) {
     const container = document.getElementById("toast-container");
@@ -702,7 +680,6 @@
     const savedShell = localStorage.getItem("aj139_mouse_shell") || "black.png";
     setShellColor(savedShell);
 
-    // Build Lighting Cards
     const grid = document.getElementById("lighting-grid");
     grid.innerHTML = "";
     STREAMER_MODES.forEach(m => {
@@ -717,7 +694,6 @@
       `;
     });
 
-    // Build DPI Rows
     const dpiContainer = document.getElementById("dpi-stage-rows");
     dpiContainer.innerHTML = "";
     for (let i = 0; i < 6; i++) {
@@ -738,7 +714,6 @@
       `;
     }
 
-    // Populate Buttons
     const optionsHtml = Object.keys(KEY_BINDINGS).map(k => `<option value="${k}">${k}</option>`).join("");
     for (let i = 0; i < 6; i++) {
       const el = document.getElementById(`btn-select-${i}`);
@@ -755,7 +730,6 @@
     handleLightingModeChange(activeStreamerMode);
   }
 
-  // --- WebHID Transaction Engine ---
   function transact(sendPkt, matchFn, timeoutMs = 300) {
     return new Promise(async (resolve) => {
       if (!hidDevice || !hidDevice.opened) return resolve(null);
@@ -784,7 +758,33 @@
     });
   }
 
-  // --- Hardware Interrupt Listener ---
+  // --- Secure Hardware Debounced Read ---
+  function triggerLightSync() {
+    clearTimeout(lightSyncTimer);
+    lightSyncTimer = setTimeout(async () => {
+      if (!hidDevice || !hidDevice.opened) return;
+      if (isBusBusy) {
+        triggerLightSync(); // Requeue if busy
+        return;
+      }
+      isBusBusy = true;
+      try {
+        const cfgPacket = new Array(65).fill(0);
+        cfgPacket[1] = 0x55; cfgPacket[2] = 0x0E; cfgPacket[3] = 0xA5; cfgPacket[4] = 0x0B; cfgPacket[5] = 0x30;
+        cfgPacket[6] = 0x01; cfgPacket[7] = 0x01; cfgPacket[8] = 0x01;
+        const cfgRes = await transact(cfgPacket, d => d[0] === 0xAA && d[1] === 0x0E, 250);
+        if (cfgRes && cfgRes.length >= 55) {
+          const hwMode = (cfgRes[9] >= 0 && cfgRes[9] <= 6) ? cfgRes[9] : 6;
+          if (hwMode !== activeStreamerMode) {
+            handleLightingModeChange(hwMode);
+          }
+        }
+      } finally {
+        isBusBusy = false;
+      }
+    }, 150);
+  }
+
   function setupHardwareListener() {
     if (!hidDevice) return;
     hidDevice.oninputreport = (event) => {
@@ -802,14 +802,9 @@
         else if (data[1] === 0x30) {
           document.getElementById("header-battery").innerText = `${data[8]}% ${data[9] ? "(⚡)" : ""}`;
         }
-        // Physical RGB Switch push
-        else if (data[1] === 0x21 || (data[1] === 0xFA && (data[8] === 0x21 || data[8] === 0x20 || data[8] === 0x03))) {
-          for (let idx of [11, 10, 9, 8]) {
-            if (data[idx] !== undefined && data[idx] >= 0 && data[idx] <= 6) {
-              handleLightingModeChange(data[idx]);
-              break;
-            }
-          }
+        // Physical RGB Switch trigger - Accurately pull state from config query
+        else if (data[1] === 0x21 || (data[1] === 0xFA && data[8] !== 0x10)) {
+          triggerLightSync();
         }
       }
     };
@@ -840,89 +835,90 @@
   }
 
   async function syncHardwareState() {
-    if (!hidDevice || !hidDevice.opened) return;
+    if (!hidDevice || !hidDevice.opened || isBusBusy) return;
+    isBusBusy = true;
 
-    // 1. Query Config (Cmd 0x0E)
-    const cfgPacket = new Array(65).fill(0);
-    cfgPacket[1] = 0x55; cfgPacket[2] = 0x0E; cfgPacket[3] = 0xA5; cfgPacket[4] = 0x0B; cfgPacket[5] = 0x30;
-    cfgPacket[6] = 0x01; cfgPacket[7] = 0x01; cfgPacket[8] = 0x01;
-    const cfgRes = await transact(cfgPacket, d => d[0] === 0xAA && d[1] === 0x0E);
+    try {
+      const cfgPacket = new Array(65).fill(0);
+      cfgPacket[1] = 0x55; cfgPacket[2] = 0x0E; cfgPacket[3] = 0xA5; cfgPacket[4] = 0x0B; cfgPacket[5] = 0x30;
+      cfgPacket[6] = 0x01; cfgPacket[7] = 0x01; cfgPacket[8] = 0x01;
+      const cfgRes = await transact(cfgPacket, d => d[0] === 0xAA && d[1] === 0x0E);
 
-    // 2. Query Buttons (Cmd 0x08)
-    const keyPacket = new Array(65).fill(0);
-    keyPacket[1] = 0x55; keyPacket[2] = 0x08; keyPacket[3] = 0xA5; keyPacket[4] = 0x0B; keyPacket[5] = 0x20;
-    const keyRes = await transact(keyPacket, d => d[0] === 0xAA && d[1] === 0x08);
+      const keyPacket = new Array(65).fill(0);
+      keyPacket[1] = 0x55; keyPacket[2] = 0x08; keyPacket[3] = 0xA5; keyPacket[4] = 0x0B; keyPacket[5] = 0x20;
+      const keyRes = await transact(keyPacket, d => d[0] === 0xAA && d[1] === 0x08);
 
-    // 3. Query Battery (Cmd 0x30)
-    const batPacket = new Array(65).fill(0);
-    batPacket[1] = 0x55; batPacket[2] = 0x30; batPacket[3] = 0xA5; batPacket[4] = 0x0B; batPacket[5] = 0x2E;
-    batPacket[6] = 0x01; batPacket[7] = 0x01; batPacket[8] = 0x01;
-    const batRes = await transact(batPacket, d => d[0] === 0xAA && d[1] === 0x30);
+      const batPacket = new Array(65).fill(0);
+      batPacket[1] = 0x55; batPacket[2] = 0x30; batPacket[3] = 0xA5; batPacket[4] = 0x0B; batPacket[5] = 0x2E;
+      batPacket[6] = 0x01; batPacket[7] = 0x01; batPacket[8] = 0x01;
+      const batRes = await transact(batPacket, d => d[0] === 0xAA && d[1] === 0x30);
 
-    // 4. Query Firmware (Cmd 0x03)
-    const fwPacket = new Array(65).fill(0);
-    fwPacket[1] = 0x55; fwPacket[2] = 0x03;
-    const fwRes = await transact(fwPacket, d => d.length >= 26);
+      const fwPacket = new Array(65).fill(0);
+      fwPacket[1] = 0x55; fwPacket[2] = 0x03;
+      const fwRes = await transact(fwPacket, d => d.length >= 26);
 
-    if (fwRes && fwRes.length >= 26) {
-      document.getElementById("header-fw").innerText = `FW: ${String.fromCharCode(fwRes[23])}.${String.fromCharCode(fwRes[24])}.${String.fromCharCode(fwRes[25])}`;
-    }
-    if (batRes && batRes[0] === 0xAA) {
-      document.getElementById("header-battery").innerText = `${batRes[8]}% ${batRes[9] ? "(⚡)" : ""}`;
-    }
-
-    if (cfgRes && cfgRes.length >= 55) {
-      const hwMode = (cfgRes[9] >= 0 && cfgRes[9] <= 6) ? cfgRes[9] : 6;
-      handleLightingModeChange(hwMode);
-
-      const rateMap = { 0: 125, 1: 250, 2: 500, 3: 1000 };
-      setPolling(rateMap[cfgRes[10] - 1] || 1000);
-
-      activeDpiIndex = Math.max(0, cfgRes[12] - 1);
-      updateDpiLedGlow(activeDpiIndex);
-      for (let i = 0; i < 6; i++) {
-        const dpi = cfgRes[13 + i * 2] | (cfgRes[14 + i * 2] << 8);
-        if (dpi > 0) {
-          currentDpis[i] = dpi;
-          document.getElementById(`dpi-rng-${i}`).value = dpi;
-          document.getElementById(`dpi-lbl-${i}`).innerText = `${dpi} DPI`;
-        }
+      if (fwRes && fwRes.length >= 26) {
+        document.getElementById("header-fw").innerText = `FW: ${String.fromCharCode(fwRes[23])}.${String.fromCharCode(fwRes[24])}.${String.fromCharCode(fwRes[25])}`;
+      }
+      if (batRes && batRes[0] === 0xAA) {
+        document.getElementById("header-battery").innerText = `${batRes[8]}% ${batRes[9] ? "(⚡)" : ""}`;
       }
 
-      const sensorFlag = cfgRes[50];
-      document.getElementById("chk-motion-sync").checked = !!(sensorFlag & 0x20);
-      document.getElementById("chk-ripple").checked = !!(sensorFlag & 0x10);
-      document.getElementById("chk-linesnap").checked = !!(sensorFlag & 0x01);
-      document.getElementById("chk-esports").checked = !!(cfgRes[53] & 0x01);
+      if (cfgRes && cfgRes.length >= 55) {
+        const hwMode = (cfgRes[9] >= 0 && cfgRes[9] <= 6) ? cfgRes[9] : 6;
+        handleLightingModeChange(hwMode);
 
-      setLOD(cfgRes[49] === 2 ? 2 : 1);
-      document.getElementById("rng-debounce").value = cfgRes[51];
-      document.getElementById("lbl-debounce").innerText = cfgRes[51] + " ms";
-      document.getElementById("rng-sleep").value = cfgRes[52];
-      document.getElementById("lbl-sleep").innerText = cfgRes[52] === 0 ? "Never" : cfgRes[52] + " min";
-      document.getElementById("chk-invert-scroll").checked = !!cfgRes[48];
-      document.getElementById("chk-move-wake").checked = !!(cfgRes[54] & 0x01);
-    }
+        const rateMap = { 0: 125, 1: 250, 2: 500, 3: 1000 };
+        setPolling(rateMap[cfgRes[10] - 1] || 1000);
 
-    if (keyRes && keyRes.length >= 32) {
-      const kData = keyRes.slice(8);
-      for (let i = 0; i < 6; i++) {
-        const t = kData[4 * i], c1 = kData[4 * i + 1], c2 = kData[4 * i + 2], c3 = kData[4 * i + 3];
-        const select = document.getElementById(`btn-select-${i}`);
-        for (const [name, bytes] of Object.entries(KEY_BINDINGS)) {
-          if (bytes[0] === t && bytes[1] === c1 && bytes[2] === c2 && bytes[3] === c3) {
-            select.value = name;
-            break;
+        activeDpiIndex = Math.max(0, cfgRes[12] - 1);
+        updateDpiLedGlow(activeDpiIndex);
+        for (let i = 0; i < 6; i++) {
+          const dpi = cfgRes[13 + i * 2] | (cfgRes[14 + i * 2] << 8);
+          if (dpi > 0) {
+            currentDpis[i] = dpi;
+            document.getElementById(`dpi-rng-${i}`).value = dpi;
+            document.getElementById(`dpi-lbl-${i}`).innerText = `${dpi} DPI`;
+          }
+        }
+
+        const sensorFlag = cfgRes[50];
+        document.getElementById("chk-motion-sync").checked = !!(sensorFlag & 0x20);
+        document.getElementById("chk-ripple").checked = !!(sensorFlag & 0x10);
+        document.getElementById("chk-linesnap").checked = !!(sensorFlag & 0x01);
+        document.getElementById("chk-esports").checked = !!(cfgRes[53] & 0x01);
+
+        setLOD(cfgRes[49] === 2 ? 2 : 1);
+        document.getElementById("rng-debounce").value = cfgRes[51];
+        document.getElementById("lbl-debounce").innerText = cfgRes[51] + " ms";
+        document.getElementById("rng-sleep").value = cfgRes[52];
+        document.getElementById("lbl-sleep").innerText = cfgRes[52] === 0 ? "Never" : cfgRes[52] + " min";
+        document.getElementById("chk-invert-scroll").checked = !!cfgRes[48];
+        document.getElementById("chk-move-wake").checked = !!(cfgRes[54] & 0x01);
+      }
+
+      if (keyRes && keyRes.length >= 32) {
+        const kData = keyRes.slice(8);
+        for (let i = 0; i < 6; i++) {
+          const t = kData[4 * i], c1 = kData[4 * i + 1], c2 = kData[4 * i + 2], c3 = kData[4 * i + 3];
+          const select = document.getElementById(`btn-select-${i}`);
+          for (const [name, bytes] of Object.entries(KEY_BINDINGS)) {
+            if (bytes[0] === t && bytes[1] === c1 && bytes[2] === c2 && bytes[3] === c3) {
+              select.value = name;
+              break;
+            }
           }
         }
       }
+      showToast("Hardware state synchronized");
+    } finally {
+      isBusBusy = false;
     }
-    showToast("Hardware state synchronized");
   }
 
   async function testStreamerMode(modeVal) {
     handleLightingModeChange(modeVal);
-    if (!hidDevice || !hidDevice.opened) return;
+    if (!hidDevice || !hidDevice.opened || isBusBusy) return;
     try {
       const livePacket = new Array(65).fill(0);
       livePacket[1] = 0x55;
@@ -940,49 +936,47 @@
       showToast("Connect mouse first");
       return;
     }
-
-    const pollingMap = { 125: 1, 250: 2, 500: 3, 1000: 4 };
-    const debounceVal = parseInt(document.getElementById("rng-debounce").value);
-    const sleepVal = parseInt(document.getElementById("rng-sleep").value);
-
-    let sensorFlag = 0;
-    if (document.getElementById("chk-linesnap").checked) sensorFlag |= 0x01;
-    if (document.getElementById("chk-ripple").checked) sensorFlag |= 0x10;
-    if (document.getElementById("chk-motion-sync").checked) sensorFlag |= 0x20;
-
-    const pkt = new Array(65).fill(0);
-    pkt[1] = 0x55;
-    pkt[2] = 0x0F;
-    pkt[3] = 0xAE;
-    pkt[4] = 0x0A;
-    pkt[5] = 0x30;
-    pkt[6] = 0x01;
-    pkt[7] = 0x01;
-    pkt[8] = 0x01;
-    pkt[9] = 0x00;
-    pkt[10] = activeStreamerMode;
-    pkt[11] = pollingMap[activePolling] || 4;
-    pkt[12] = 6;
-    pkt[13] = activeDpiIndex + 1;
-
-    for (let i = 0; i < 6; i++) {
-      pkt[14 + i * 2] = currentDpis[i] & 0xFF;
-      pkt[15 + i * 2] = (currentDpis[i] >> 8) & 0xFF;
-    }
-
-    pkt[49] = document.getElementById("chk-invert-scroll").checked ? 1 : 0;
-    pkt[50] = activeLOD;
-    pkt[51] = sensorFlag;
-    pkt[52] = debounceVal;
-    pkt[53] = sleepVal;
-    pkt[54] = document.getElementById("chk-esports").checked ? 1 : 0;
-    pkt[55] = document.getElementById("chk-move-wake").checked ? 1 : 0;
+    if (isBusBusy) return;
+    isBusBusy = true;
 
     try {
+      const pollingMap = { 125: 1, 250: 2, 500: 3, 1000: 4 };
+      const debounceVal = parseInt(document.getElementById("rng-debounce").value);
+      const sleepVal = parseInt(document.getElementById("rng-sleep").value);
+
+      let sensorFlag = 0;
+      if (document.getElementById("chk-linesnap").checked) sensorFlag |= 0x01;
+      if (document.getElementById("chk-ripple").checked) sensorFlag |= 0x10;
+      if (document.getElementById("chk-motion-sync").checked) sensorFlag |= 0x20;
+
+      const pkt = new Array(65).fill(0);
+      pkt[1] = 0x55; pkt[2] = 0x0F; pkt[3] = 0xAE; pkt[4] = 0x0A; pkt[5] = 0x30;
+      pkt[6] = 0x01; pkt[7] = 0x01; pkt[8] = 0x01;
+      pkt[9] = 0x00;
+      pkt[10] = activeStreamerMode;
+      pkt[11] = pollingMap[activePolling] || 4;
+      pkt[12] = 6;
+      pkt[13] = activeDpiIndex + 1;
+
+      for (let i = 0; i < 6; i++) {
+        pkt[14 + i * 2] = currentDpis[i] & 0xFF;
+        pkt[15 + i * 2] = (currentDpis[i] >> 8) & 0xFF;
+      }
+
+      pkt[49] = document.getElementById("chk-invert-scroll").checked ? 1 : 0;
+      pkt[50] = activeLOD;
+      pkt[51] = sensorFlag;
+      pkt[52] = debounceVal;
+      pkt[53] = sleepVal;
+      pkt[54] = document.getElementById("chk-esports").checked ? 1 : 0;
+      pkt[55] = document.getElementById("chk-move-wake").checked ? 1 : 0;
+
       await hidDevice.sendReport(0, new Uint8Array(pkt.slice(1)));
       showToast("Configuration saved to onboard memory");
     } catch (err) {
       showToast("Write failed: " + err.message);
+    } finally {
+      isBusBusy = false;
     }
   }
 
@@ -991,28 +985,28 @@
       showToast("Connect mouse first");
       return;
     }
-
-    const pkt = new Array(65).fill(0);
-    pkt[1] = 0x55;
-    pkt[2] = 0x09;
-    pkt[3] = 0xA5;
-    pkt[4] = 0x22;
-    pkt[5] = 0x20;
-
-    for (let i = 0; i < 6; i++) {
-      const selected = document.getElementById(`btn-select-${i}`).value;
-      const bytes = KEY_BINDINGS[selected] || [32, 0, 0, 0];
-      pkt[9 + i * 4] = bytes[0];
-      pkt[10 + i * 4] = bytes[1];
-      pkt[11 + i * 4] = bytes[2];
-      pkt[12 + i * 4] = bytes[3];
-    }
+    if (isBusBusy) return;
+    isBusBusy = true;
 
     try {
+      const pkt = new Array(65).fill(0);
+      pkt[1] = 0x55; pkt[2] = 0x09; pkt[3] = 0xA5; pkt[4] = 0x22; pkt[5] = 0x20;
+
+      for (let i = 0; i < 6; i++) {
+        const selected = document.getElementById(`btn-select-${i}`).value;
+        const bytes = KEY_BINDINGS[selected] || [32, 0, 0, 0];
+        pkt[9 + i * 4] = bytes[0];
+        pkt[10 + i * 4] = bytes[1];
+        pkt[11 + i * 4] = bytes[2];
+        pkt[12 + i * 4] = bytes[3];
+      }
+
       await hidDevice.sendReport(0, new Uint8Array(pkt.slice(1)));
       showToast("Button bindings flashed to EEPROM");
     } catch (err) {
       showToast("Save buttons failed: " + err.message);
+    } finally {
+      isBusBusy = false;
     }
   }
 
