@@ -18,7 +18,7 @@
 
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
     body { background-color: var(--bg-dark); color: var(--text); padding: 20px; display: flex; justify-content: center; }
-    .container { width: 100%; max-width: 900px; display: flex; flex-direction: column; gap: 16px; }
+    .container { width: 100%; max-width: 920px; display: flex; flex-direction: column; gap: 16px; }
 
     /* Telemetry Header */
     .telemetry-card {
@@ -80,16 +80,62 @@
       position: relative; width: 500px; height: 500px;
     }
     .mouse-img {
-      width: 500px; height: 500px; object-fit: contain; position: absolute; top: 0; left: 0; z-index: 1;
+      width: 500px; height: 500px; object-fit: contain; position: absolute; top: 0; left: 0; z-index: 3;
+      filter: drop-shadow(0 8px 24px rgba(0,0,0,0.6));
     }
 
     /* Live DPI LED Box */
     .dpi-slit-led {
       position: absolute; top: 67px; left: 243px; width: 14px; height: 5px;
       border-radius: 3px; background-color: var(--dpi-glow); z-index: 10;
-      box-shadow: 0 0 8px var(--dpi-glow), 0 0 16px var(--dpi-glow);
-      transition: background-color 0.3s ease, box-shadow 0.3s ease;
+      box-shadow: 0 0 10px var(--dpi-glow), 0 0 20px var(--dpi-glow);
+      transition: background-color 0.25s ease, box-shadow 0.25s ease;
     }
+
+    /* --- Radiating Side RGB Diffuser (70% Body Length) --- */
+    .side-glow {
+      position: absolute; top: 90px; width: 34px; height: 330px; border-radius: 40px;
+      z-index: 2; pointer-events: none; filter: blur(14px); opacity: 0.85; transition: opacity 0.3s;
+    }
+    .side-glow.left { left: 130px; transform: rotate(-3deg); }
+    .side-glow.right { right: 130px; transform: rotate(3deg); }
+
+    /* Glow Animations */
+    .glow-wave {
+      background: linear-gradient(180deg, #ff0055, #ff9900, #33cc33, #0099ff, #cc00ff, #ff0055);
+      background-size: 100% 300%; animation: animWave 3s linear infinite;
+    }
+    @keyframes animWave { 0% { background-position: 0% 0%; } 100% { background-position: 0% 300%; } }
+
+    .glow-neon {
+      background: linear-gradient(180deg, #00f0ff, #7000ff, #ff007b, #00f0ff);
+      background-size: 100% 200%; animation: animNeon 4s ease infinite;
+    }
+    @keyframes animNeon { 0%, 100% { filter: blur(14px) hue-rotate(0deg); } 50% { filter: blur(18px) hue-rotate(180deg); } }
+
+    .glow-chaser {
+      background: linear-gradient(180deg, rgba(255,255,255,0) 0%, #ff5019 50%, rgba(255,255,255,0) 100%);
+      background-size: 100% 200%; animation: animChaser 1.5s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+    }
+    @keyframes animChaser { 0% { background-position: 0% -100%; } 100% { background-position: 0% 200%; } }
+
+    .glow-yoyo {
+      background: radial-gradient(circle at 50% 50%, #00e5ff 0%, rgba(0,229,255,0) 70%);
+      animation: animYoyo 2s ease-in-out infinite alternate;
+    }
+    @keyframes animYoyo { 0% { transform: translateY(-50px) scaleY(0.7); } 100% { transform: translateY(60px) scaleY(1.2); } }
+
+    .glow-flow {
+      background: linear-gradient(180deg, #ff5019, #ffd000, #ff5019);
+      background-size: 100% 200%; animation: animWave 2s linear infinite;
+    }
+
+    .glow-breathing {
+      background: #00e5ff; animation: animBreathing 3s ease-in-out infinite;
+    }
+    @keyframes animBreathing { 0%, 100% { opacity: 0.15; filter: blur(8px); } 50% { opacity: 0.95; filter: blur(20px); } }
+
+    .glow-off { display: none !important; }
 
     /* SVG Overlay Lines */
     .stage-svg-overlay {
@@ -107,14 +153,12 @@
     .btn-anchor-label { font-size: 11px; font-weight: 700; color: var(--text-dim); text-transform: uppercase; }
     .btn-anchor select { padding: 3px 6px; font-size: 12px; height: 26px; }
 
-    /* Anchor Positions (Left & Right alignment) */
-    #anchor-0 { top: 90px; left: -10px; width: 135px; }   /* Left Click */
-    #anchor-4 { top: 180px; left: -15px; width: 135px; }  /* Forward */
-    #anchor-3 { top: 250px; left: -15px; width: 135px; }  /* Backward */
-
-    #anchor-1 { top: 90px; right: -10px; width: 135px; }  /* Right Click */
-    #anchor-2 { top: 155px; right: -15px; width: 135px; } /* Middle Click */
-    #anchor-5 { top: 220px; right: -15px; width: 135px; } /* DPI Button */
+    #anchor-0 { top: 90px; left: -10px; width: 135px; }
+    #anchor-4 { top: 180px; left: -15px; width: 135px; }
+    #anchor-3 { top: 250px; left: -15px; width: 135px; }
+    #anchor-1 { top: 90px; right: -10px; width: 135px; }
+    #anchor-2 { top: 155px; right: -15px; width: 135px; }
+    #anchor-5 { top: 220px; right: -15px; width: 135px; }
   </style>
 </head>
 <body>
@@ -131,9 +175,16 @@
         Mode: <span id="tele-mode">None</span> | FW: <span id="tele-fw">--</span> | Battery: <span id="tele-bat">--%</span>
       </div>
     </div>
-    <div style="display: flex; gap: 8px;">
+    <div style="display: flex; gap: 8px; align-items: center;">
+      <div style="display: flex; align-items: center; gap: 6px; margin-right: 8px;">
+        <span style="font-size: 12px; color: var(--text-dim);">Color:</span>
+        <select id="select-mouse-color" onchange="changeMouseColor(this.value)">
+          <option value="black.png">Black</option>
+          <option value="white.png">White</option>
+        </select>
+      </div>
       <button class="secondary" onclick="syncHardwareState()">Sync State</button>
-      <button class="primary" onclick="connectDevice()">Connect Mouse</button>
+      <button class="primary" id="btn-connect" onclick="connectDevice()">Connect Mouse</button>
     </div>
   </div>
 
@@ -150,11 +201,15 @@
     <div class="card" style="padding: 10px;">
       <div class="mouse-stage-wrapper">
         <div class="mouse-stage">
-          <!-- Live Glow LED over Scroll Tip Slit -->
+          <!-- Radiating Side RGB Strips (70% Mouse Length) -->
+          <div class="side-glow left glow-off" id="glow-left"></div>
+          <div class="side-glow right glow-off" id="glow-right"></div>
+
+          <!-- Live DPI Stage Indicator Slit -->
           <div class="dpi-slit-led" id="live-dpi-led" title="Active DPI Stage Indicator"></div>
 
-          <!-- Base 500x500 Mouse PNG -->
-          <img src="black.png" alt="AJ139 Mouse" class="mouse-img" onerror="this.style.opacity='0.2';">
+          <!-- Base Mouse Image -->
+          <img id="mouse-img" src="black.png" alt="AJ139 Mouse" class="mouse-img" onerror="this.src='black.png';">
 
           <!-- SVG Leader Lines -->
           <svg class="stage-svg-overlay" viewBox="0 0 500 500">
@@ -183,7 +238,7 @@
             <polyline points="380,238 310,238 250,195" stroke="#ff5019" stroke-width="1.5" fill="none"/>
           </svg>
 
-          <!-- Floating Interactive Dropdown Cards -->
+          <!-- Floating Button Dropdowns -->
           <div class="btn-anchor" id="anchor-0">
             <span class="btn-anchor-label">1. Left Click</span>
             <select id="btn-select-0"></select>
@@ -237,7 +292,7 @@
 
     <div class="card">
       <div class="card-title">DPI Stages & Indicator Colors</div>
-      <div class="card-desc">Selecting a stage immediately previews its assigned LED glow color.</div>
+      <div class="card-desc">Selecting or clicking the physical DPI button dynamically updates the LED glow.</div>
       <div id="dpi-rows"></div>
     </div>
 
@@ -250,7 +305,7 @@
   <div class="tab-content" id="tab-rgb">
     <div class="card">
       <div class="card-title">Side Strip Lighting Animations</div>
-      <div class="card-desc">Built-in addressable streamer lighting animation presets.</div>
+      <div class="card-desc">Built-in addressable streamer lighting animation presets with live preview.</div>
       <div id="rgb-modes-list"></div>
     </div>
     <div class="action-btn-row">
@@ -354,26 +409,50 @@
   ];
 
   const STREAMER_MODES = [
-    { label: "Wave / Streamer (波浪流光)", val: 0 },
-    { label: "Neon Spectrum Cycle (霓虹幻彩)", val: 1 },
-    { label: "Touring Chaser (跑马灯)", val: 2 },
-    { label: "Yo-Yo Bouncing Ball (悠悠球)", val: 3 },
-    { label: "Directional Flow (单向流动)", val: 4 },
-    { label: "Color Cycle Breathing (幻彩呼吸)", val: 5 },
-    { label: "Turn Off LED Strip (关闭灯光)", val: 6 }
+    { label: "Wave / Streamer (波浪流光)", val: 0, class: "glow-wave" },
+    { label: "Neon Spectrum Cycle (霓虹幻彩)", val: 1, class: "glow-neon" },
+    { label: "Touring Chaser (跑马灯)", val: 2, class: "glow-chaser" },
+    { label: "Yo-Yo Bouncing Ball (悠悠球)", val: 3, class: "glow-yoyo" },
+    { label: "Directional Flow (单向流动)", val: 4, class: "glow-flow" },
+    { label: "Color Cycle Breathing (幻彩呼吸)", val: 5, class: "glow-breathing" },
+    { label: "Turn Off LED Strip (关闭灯光)", val: 6, class: "glow-off" }
   ];
 
   let hidDevice = null;
   let activeStreamerMode = 6;
   let currentDpis = [800, 1600, 2400, 3200, 5000, 12000];
+  let activeDpiIndex = 1;
 
   function updateDpiLedGlow(stageIndex) {
+    activeDpiIndex = stageIndex;
     const col = DPI_STAGE_COLORS[stageIndex]?.hex || "#32aa70";
     document.documentElement.style.setProperty('--dpi-glow', col);
+
+    const radio = document.querySelector(`input[name="active_dpi"][value="${stageIndex}"]`);
+    if (radio) radio.checked = true;
+  }
+
+  function updateSideGlowClass(modeVal) {
+    activeStreamerMode = modeVal;
+    const item = STREAMER_MODES.find(m => m.val === modeVal) || STREAMER_MODES[6];
+    const left = document.getElementById("glow-left");
+    const right = document.getElementById("glow-right");
+
+    left.className = `side-glow left ${item.class}`;
+    right.className = `side-glow right ${item.class}`;
+  }
+
+  function changeMouseColor(fileName) {
+    document.getElementById("mouse-img").src = fileName;
+    localStorage.setItem("aj139_mouse_color", fileName);
   }
 
   function initUI() {
-    // Build DPI Tab rows with Stage color indicators
+    const savedColor = localStorage.getItem("aj139_mouse_color") || "black.png";
+    document.getElementById("select-mouse-color").value = savedColor;
+    changeMouseColor(savedColor);
+
+    // Build DPI Tab rows
     const dpiContainer = document.getElementById("dpi-rows");
     dpiContainer.innerHTML = "";
     for (let i = 0; i < 6; i++) {
@@ -381,7 +460,7 @@
       dpiContainer.innerHTML += `
         <div class="row">
           <label class="radio-label" style="font-weight: 600;">
-            <input type="radio" name="active_dpi" value="${i}" ${i === 1 ? "checked" : ""}
+            <input type="radio" name="active_dpi" value="${i}" ${i === activeDpiIndex ? "checked" : ""}
                    onchange="updateDpiLedGlow(${i})">
             <span style="display:inline-block; width:10px; height:10px; border-radius:50%; background:${col.hex}; margin-right:4px;"></span>
             Stage ${i + 1}
@@ -400,22 +479,21 @@
       rgbContainer.innerHTML += `
         <div class="row">
           <label class="radio-label">
-            <input type="radio" name="streamer_mode" value="${m.val}" ${m.val === 6 ? "checked" : ""}
+            <input type="radio" name="streamer_mode" value="${m.val}" ${m.val === activeStreamerMode ? "checked" : ""}
                    onchange="testStreamerMode(${m.val})"> ${m.label}
           </label>
-          <button class="secondary" onclick="testStreamerMode(${m.val})">Test</button>
+          <button class="secondary" onclick="testStreamerMode(${m.val})">Test Now</button>
         </div>
       `;
     });
 
-    // Populate Visual Dropdowns
+    // Populate Button Dropdowns
     const optionsHtml = Object.keys(KEY_BINDINGS).map(k => `<option value="${k}">${k}</option>`).join("");
     for (let i = 0; i < 6; i++) {
       const el = document.getElementById(`btn-select-${i}`);
       if (el) el.innerHTML = optionsHtml;
     }
 
-    // Set Defaults
     document.getElementById("btn-select-0").value = "Left Click";
     document.getElementById("btn-select-1").value = "Right Click";
     document.getElementById("btn-select-2").value = "Middle Click";
@@ -423,7 +501,8 @@
     document.getElementById("btn-select-4").value = "Forward";
     document.getElementById("btn-select-5").value = "DPI Loop";
 
-    updateDpiLedGlow(1);
+    updateDpiLedGlow(activeDpiIndex);
+    updateSideGlowClass(activeStreamerMode);
   }
 
   function switchTab(tabId) {
@@ -438,10 +517,30 @@
     document.getElementById(`dpi-val-${idx}`).innerText = `${val} DPI`;
   }
 
+  // --- Real-time Hardware Event Listener ---
+  function setupLiveHardwareListener() {
+    if (!hidDevice) return;
+    hidDevice.oninputreport = (event) => {
+      const data = new Uint8Array(event.data.buffer);
+      // Live DPI & Polling Rate switch notification from physical button[cite: 1]
+      if (data[0] === 170 && data[1] === 250 && data[8] === 16) {
+        const newDpiStage = data[9] - 1; // 0-indexed[cite: 1]
+        const newRate = { 0: 125, 1: 250, 2: 500, 3: 1000 }[data[10] - 1] || 1000;[cite: 1]
+        updateDpiLedGlow(newDpiStage);
+        const rateRadio = document.querySelector(`input[name="polling"][value="${newRate}"]`);
+        if (rateRadio) rateRadio.checked = true;
+      }
+      // Live Battery Update notification[cite: 1]
+      if (data[0] === 170 && data[1] === 48) {
+        document.getElementById("tele-bat").innerText = `${data[8]}% ${data[9] ? "(Charging)" : ""}`;[cite: 1]
+      }
+    };
+  }
+
   // --- WebHID Communication ---
   async function connectDevice() {
     if (!navigator.hid) {
-      alert("WebHID API is not supported in this browser. Please use Chrome, Edge, Brave, or Opera.");
+      alert("WebHID is not supported. Please use Chrome, Edge, Brave, or Opera.");
       return;
     }
     try {
@@ -450,6 +549,7 @@
       hidDevice = devices[0];
       if (!hidDevice.opened) await hidDevice.open();
       updateStatusHeader(true);
+      setupLiveHardwareListener();
       await syncHardwareState();
     } catch (err) {
       console.error("Connection failed:", err);
@@ -481,11 +581,13 @@
       const onReport = (event) => {
         clearTimeout(timer);
         hidDevice.removeEventListener("inputreport", onReport);
+        setupLiveHardwareListener(); // Re-bind continuous live monitor
         resolve(new Uint8Array(event.data.buffer));
       };
       hidDevice.addEventListener("inputreport", onReport);
       timer = setTimeout(() => {
         hidDevice.removeEventListener("inputreport", onReport);
+        setupLiveHardwareListener();
         resolve(null);
       }, timeoutMs);
 
@@ -497,38 +599,38 @@
   async function syncHardwareState() {
     if (!hidDevice || !hidDevice.opened) return;
 
-    // Query Config (0x0E)[cite: 1]
+    // 1. Query Config (0x0E)[cite: 1]
     const cfgPacket = new Array(65).fill(0);
     cfgPacket[1] = 0x55; cfgPacket[2] = 0x0E; cfgPacket[3] = 0xA5; cfgPacket[4] = 0x0B; cfgPacket[5] = 0x30;
     cfgPacket[6] = 0x01; cfgPacket[7] = 0x01; cfgPacket[8] = 0x01;
     const cfgRes = await sendAndReceive(cfgPacket);
 
-    // Query Buttons (0x08)[cite: 1]
+    // 2. Query Buttons (0x08)[cite: 1]
     const keyPacket = new Array(65).fill(0);
     keyPacket[1] = 0x55; keyPacket[2] = 0x08; keyPacket[3] = 0xA5; keyPacket[4] = 0x0B; keyPacket[5] = 0x20;
     const keyRes = await sendAndReceive(keyPacket);
 
-    // Query Battery (0x30)[cite: 1]
+    // 3. Query Battery (0x30)[cite: 1]
     const batPacket = new Array(65).fill(0);
     batPacket[1] = 0x55; batPacket[2] = 0x30; batPacket[3] = 0xA5; batPacket[4] = 0x0B; batPacket[5] = 0x2E;
     batPacket[6] = 0x01; batPacket[7] = 0x01; batPacket[8] = 0x01;
     const batRes = await sendAndReceive(batPacket);
 
-    // Query Firmware (0x03)[cite: 1]
+    // 4. Query Firmware (0x03)[cite: 1]
     const fwPacket = new Array(65).fill(0);
     fwPacket[1] = 0x55; fwPacket[2] = 0x03;
     const fwRes = await sendAndReceive(fwPacket);
 
     if (fwRes && fwRes.length >= 26) {
-      document.getElementById("tele-fw").innerText = `${String.fromCharCode(fwRes[23])}.${String.fromCharCode(fwRes[24])}.${String.fromCharCode(fwRes[25])}`;
+      document.getElementById("tele-fw").innerText = `${String.fromCharCode(fwRes[23])}.${String.fromCharCode(fwRes[24])}.${String.fromCharCode(fwRes[25])}`;[cite: 1]
     }
     if (batRes && batRes[0] === 0xAA && batRes[1] === 0x30) {
-      document.getElementById("tele-bat").innerText = `${batRes[8]}% ${batRes[9] ? "(Charging)" : ""}`;
+      document.getElementById("tele-bat").innerText = `${batRes[8]}% ${batRes[9] ? "(Charging)" : ""}`;[cite: 1]
     }
 
     if (cfgRes && cfgRes.length >= 55) {
-      activeStreamerMode = cfgRes[9];
-      const streamerRadio = document.querySelector(`input[name="streamer_mode"][value="${activeStreamerMode}"]`);
+      updateSideGlowClass(cfgRes[9]);
+      const streamerRadio = document.querySelector(`input[name="streamer_mode"][value="${cfgRes[9]}"]`);
       if (streamerRadio) streamerRadio.checked = true;
 
       const rateMap = { 0: 125, 1: 250, 2: 500, 3: 1000 };
@@ -537,8 +639,6 @@
       if (rateRadio) rateRadio.checked = true;
 
       const activeStage = Math.max(0, cfgRes[12] - 1);
-      const stageRadio = document.querySelector(`input[name="active_dpi"][value="${activeStage}"]`);
-      if (stageRadio) stageRadio.checked = true;
       updateDpiLedGlow(activeStage);
 
       for (let i = 0; i < 6; i++) {
@@ -580,7 +680,7 @@
   }
 
   async function testStreamerMode(modeVal) {
-    activeStreamerMode = modeVal;
+    updateSideGlowClass(modeVal);
     if (!hidDevice || !hidDevice.opened) return;
     const livePacket = new Array(65).fill(0);
     livePacket[1] = 0x55; livePacket[2] = 0x21; livePacket[5] = 0x03; livePacket[11] = modeVal;
