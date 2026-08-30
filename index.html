@@ -93,13 +93,14 @@
       transition: background-color 0.25s ease, box-shadow 0.25s ease;
     }
 
-    /* --- Radiating Front-Top RGB Diffuser --- */
+    /* --- Radiating Front-to-Mid RGB Diffuser (Extended to bottom side button) --- */
     .side-glow {
-      position: absolute; top: 55px; width: 28px; height: 155px; border-radius: 30px;
+      position: absolute; top: 55px; width: 30px; height: 225px; border-radius: 26px;
       z-index: 2; pointer-events: none; filter: blur(12px); opacity: 0.95; transition: opacity 0.3s;
+      transform-origin: top center;
     }
-    .side-glow.left { left: 138px; transform: rotate(8deg); }
-    .side-glow.right { right: 138px; transform: rotate(-8deg); }
+    .side-glow.left { left: 136px; transform: rotate(5deg); }
+    .side-glow.right { right: 136px; transform: rotate(-5deg); }
 
     /* 1. Wave: Slower, Reversed Movement (6.5s) */
     .glow-wave {
@@ -239,7 +240,7 @@
     <div class="card" style="padding: 10px;">
       <div class="mouse-stage-wrapper">
         <div class="mouse-stage">
-          <!-- Radiating Front-Top RGB Strips -->
+          <!-- Radiating Front-to-Mid RGB Diffuser Strips -->
           <div class="side-glow left glow-off" id="glow-left"></div>
           <div class="side-glow right glow-off" id="glow-right"></div>
 
@@ -561,7 +562,7 @@
     hidDevice.oninputreport = async (event) => {
       const data = new Uint8Array(event.data.buffer);
       
-      // 1. Live DPI & Polling Rate switch notification from physical button
+      // 1. Live DPI & Polling Rate switch notification from physical button[cite: 1]
       if (data[0] === 170 && data[1] === 250 && data[8] === 16) {
         const newDpiStage = data[9] - 1;
         const rateMap = { 0: 125, 1: 250, 2: 500, 3: 1000 };
@@ -571,12 +572,12 @@
         if (rateRadio) rateRadio.checked = true;
       }
       
-      // 2. Live Battery Update notification
+      // 2. Live Battery Update notification[cite: 1]
       if (data[0] === 170 && data[1] === 48) {
         document.getElementById("tele-bat").innerText = `${data[8]}% ${data[9] ? "(Charging)" : ""}`;
       }
 
-      // 3. Direct RGB Switch Notification (0xAA 0x21 / 170 33)
+      // 3. Direct RGB Switch Notification (0xAA 0x21 / 170 33)[cite: 1]
       if (data[0] === 170 && data[1] === 33) {
         const newMode = data[11] !== undefined ? data[11] : data[8];
         if (newMode >= 0 && newMode <= 6) {
@@ -665,33 +666,33 @@
   async function syncHardwareState() {
     if (!hidDevice || !hidDevice.opened) return;
 
-    // 1. Query Config (0x0E)
+    // 1. Query Config (0x0E)[cite: 1]
     const cfgPacket = new Array(65).fill(0);
     cfgPacket[1] = 0x55; cfgPacket[2] = 0x0E; cfgPacket[3] = 0xA5; cfgPacket[4] = 0x0B; cfgPacket[5] = 0x30;
     cfgPacket[6] = 0x01; cfgPacket[7] = 0x01; cfgPacket[8] = 0x01;
     const cfgRes = await sendAndReceive(cfgPacket);
 
-    // 2. Query Buttons (0x08)
+    // 2. Query Buttons (0x08)[cite: 1]
     const keyPacket = new Array(65).fill(0);
     keyPacket[1] = 0x55; keyPacket[2] = 0x08; keyPacket[3] = 0xA5; keyPacket[4] = 0x0B; keyPacket[5] = 0x20;
     const keyRes = await sendAndReceive(keyPacket);
 
-    // 3. Query Battery (0x30)
+    // 3. Query Battery (0x30)[cite: 1]
     const batPacket = new Array(65).fill(0);
     batPacket[1] = 0x55; batPacket[2] = 0x30; batPacket[3] = 0xA5; batPacket[4] = 0x0B; batPacket[5] = 0x2E;
     batPacket[6] = 0x01; batPacket[7] = 0x01; batPacket[8] = 0x01;
     const batRes = await sendAndReceive(batPacket);
 
-    // 4. Query Firmware (0x03)
+    // 4. Query Firmware (0x03)[cite: 1]
     const fwPacket = new Array(65).fill(0);
     fwPacket[1] = 0x55; fwPacket[2] = 0x03;
     const fwRes = await sendAndReceive(fwPacket);
 
     if (fwRes && fwRes.length >= 26) {
-      document.getElementById("tele-fw").innerText = `${String.fromCharCode(fwRes[23])}.${String.fromCharCode(fwRes[24])}.${String.fromCharCode(fwRes[25])}`;
+      document.getElementById("tele-fw").innerText = `${String.fromCharCode(fwRes[23])}.${String.fromCharCode(fwRes[24])}.${String.fromCharCode(fwRes[25])}`;[cite: 1]
     }
     if (batRes && batRes[0] === 0xAA && batRes[1] === 0x30) {
-      document.getElementById("tele-bat").innerText = `${batRes[8]}% ${batRes[9] ? "(Charging)" : ""}`;
+      document.getElementById("tele-bat").innerText = `${batRes[8]}% ${batRes[9] ? "(Charging)" : ""}`;[cite: 1]
     }
 
     if (cfgRes && cfgRes.length >= 55) {
