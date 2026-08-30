@@ -13,7 +13,7 @@
       --accent-hover: #e04412;
       --text: #ffffff;
       --text-dim: #9aa3b0;
-      --dpi-glow: #32aa70;
+      --dpi-glow: #00ff55;
     }
 
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
@@ -84,16 +84,16 @@
       filter: drop-shadow(0 8px 24px rgba(0,0,0,0.6));
     }
 
-    /* High-Contrast DPI LED */
+    /* High-Vibrancy Saturated DPI Slit LED */
     .dpi-slit-led {
       position: absolute; top: 67px; left: 242px; width: 16px; height: 6px;
       border-radius: 3px; background-color: var(--dpi-glow); z-index: 10;
-      border: 1px solid rgba(0, 0, 0, 0.85);
-      box-shadow: 0 0 3px #ffffff, 0 0 8px var(--dpi-glow), 0 0 16px var(--dpi-glow), inset 0 0 2px #ffffff;
-      transition: background-color 0.25s ease, box-shadow 0.25s ease;
+      border: 1px solid rgba(0, 0, 0, 0.9);
+      box-shadow: 0 0 4px #ffffff, 0 0 10px var(--dpi-glow), 0 0 22px var(--dpi-glow), inset 0 0 3px #ffffff;
+      transition: background-color 0.2s ease, box-shadow 0.2s ease;
     }
 
-    /* --- Radiating Front-to-Mid RGB Diffuser (Extended to bottom side button) --- */
+    /* --- Radiating Front-to-Mid RGB Diffuser --- */
     .side-glow {
       position: absolute; top: 55px; width: 30px; height: 225px; border-radius: 26px;
       z-index: 2; pointer-events: none; filter: blur(12px); opacity: 0.95; transition: opacity 0.3s;
@@ -104,28 +104,28 @@
 
     /* 1. Wave: Slower, Reversed Movement (6.5s) */
     .glow-wave {
-      background: linear-gradient(180deg, #ff0055, #cc00ff, #0099ff, #33cc33, #ff9900, #ff0055);
+      background: linear-gradient(180deg, #ff0044, #cc00ff, #0055ff, #00ff55, #ffaa00, #ff0044);
       background-size: 100% 300%; animation: animWaveRev 6.5s linear infinite;
     }
     @keyframes animWaveRev { 0% { background-position: 0% 300%; } 100% { background-position: 0% 0%; } }
 
-    /* 2. Neon Spectrum: Smooth Full-Spectrum Cycle (6.5s) */
+    /* 2. Neon Spectrum: Fully Saturated Cycle (6.5s) */
     .glow-neon {
-      background: #ff0055; animation: animNeonCycle 6.5s linear infinite;
+      background: #ff0033; animation: animNeonCycle 6.5s linear infinite;
     }
     @keyframes animNeonCycle {
-      0%   { background-color: #ff0055; filter: blur(12px) drop-shadow(0 0 12px #ff0055); }
-      17%  { background-color: #ff9900; filter: blur(12px) drop-shadow(0 0 12px #ff9900); }
-      33%  { background-color: #ffe600; filter: blur(12px) drop-shadow(0 0 12px #ffe600); }
-      50%  { background-color: #00e676; filter: blur(12px) drop-shadow(0 0 12px #00e676); }
-      67%  { background-color: #00b0ff; filter: blur(12px) drop-shadow(0 0 12px #00b0ff); }
-      83%  { background-color: #d500f9; filter: blur(12px) drop-shadow(0 0 12px #d500f9); }
-      100% { background-color: #ff0055; filter: blur(12px) drop-shadow(0 0 12px #ff0055); }
+      0%   { background-color: #ff0033; filter: blur(12px) drop-shadow(0 0 14px #ff0033); }
+      17%  { background-color: #ff7700; filter: blur(12px) drop-shadow(0 0 14px #ff7700); }
+      33%  { background-color: #ffee00; filter: blur(12px) drop-shadow(0 0 14px #ffee00); }
+      50%  { background-color: #00ff55; filter: blur(12px) drop-shadow(0 0 14px #00ff55); }
+      67%  { background-color: #0088ff; filter: blur(12px) drop-shadow(0 0 14px #0088ff); }
+      83%  { background-color: #ee00ff; filter: blur(12px) drop-shadow(0 0 14px #ee00ff); }
+      100% { background-color: #ff0033; filter: blur(12px) drop-shadow(0 0 14px #ff0033); }
     }
 
     /* 3. Touring Chaser: Bouncing Sweep (6.5s) */
     .glow-chaser {
-      background: linear-gradient(180deg, transparent 0%, transparent 35%, #ff5019 50%, transparent 65%, transparent 100%);
+      background: linear-gradient(180deg, transparent 0%, transparent 35%, #ff4400 50%, transparent 65%, transparent 100%);
       background-size: 100% 250%; animation: animChaser6s 6.5s ease-in-out infinite;
     }
     @keyframes animChaser6s {
@@ -134,9 +134,9 @@
       100% { background-position: 0% 0%; }
     }
 
-    /* 4. Yo-Yo Ball: Color Swiping Wave (6.5s) */
+    /* 4. Yo-Yo Ball: Swiping Wave (6.5s) */
     .glow-yoyo {
-      background: linear-gradient(180deg, transparent 0%, #00e5ff 40%, #00e5ff 60%, transparent 100%);
+      background: linear-gradient(180deg, transparent 0%, #00f0ff 40%, #00f0ff 60%, transparent 100%);
       background-size: 100% 200%; animation: animYoYoSwipe6s 6.5s ease-in-out infinite;
     }
     @keyframes animYoYoSwipe6s {
@@ -145,33 +145,33 @@
       100% { background-position: 0% 0%; filter: blur(12px) hue-rotate(360deg); }
     }
 
-    /* 5. Directional Flow: Top-to-Bottom Wipe with Color Shifts (6.5s) */
+    /* 5. Directional Flow: Top-to-Bottom Wipe with Saturated Colors (6.5s) */
     .glow-flow {
       animation: animDirectionalFlow6s 6.5s linear infinite;
     }
     @keyframes animDirectionalFlow6s {
-      0%   { clip-path: inset(0 0 100% 0); background-color: #ff0055; filter: blur(12px) drop-shadow(0 0 10px #ff0055); }
-      20%  { clip-path: inset(0 0 0% 0);   background-color: #ff0055; filter: blur(12px) drop-shadow(0 0 10px #ff0055); }
-      25%  { clip-path: inset(0 0 100% 0); background-color: #00e5ff; filter: blur(12px) drop-shadow(0 0 10px #00e5ff); }
-      45%  { clip-path: inset(0 0 0% 0);   background-color: #00e5ff; filter: blur(12px) drop-shadow(0 0 10px #00e5ff); }
-      50%  { clip-path: inset(0 0 100% 0); background-color: #ffe600; filter: blur(12px) drop-shadow(0 0 10px #ffe600); }
-      70%  { clip-path: inset(0 0 0% 0);   background-color: #ffe600; filter: blur(12px) drop-shadow(0 0 10px #ffe600); }
-      75%  { clip-path: inset(0 0 100% 0); background-color: #00e676; filter: blur(12px) drop-shadow(0 0 10px #00e676); }
-      95%  { clip-path: inset(0 0 0% 0);   background-color: #00e676; filter: blur(12px) drop-shadow(0 0 10px #00e676); }
-      100% { clip-path: inset(0 0 100% 0); background-color: #ff0055; filter: blur(12px) drop-shadow(0 0 10px #ff0055); }
+      0%   { clip-path: inset(0 0 100% 0); background-color: #ff0044; filter: blur(12px) drop-shadow(0 0 12px #ff0044); }
+      20%  { clip-path: inset(0 0 0% 0);   background-color: #ff0044; filter: blur(12px) drop-shadow(0 0 12px #ff0044); }
+      25%  { clip-path: inset(0 0 100% 0); background-color: #00f0ff; filter: blur(12px) drop-shadow(0 0 12px #00f0ff); }
+      45%  { clip-path: inset(0 0 0% 0);   background-color: #00f0ff; filter: blur(12px) drop-shadow(0 0 12px #00f0ff); }
+      50%  { clip-path: inset(0 0 100% 0); background-color: #ffee00; filter: blur(12px) drop-shadow(0 0 12px #ffee00); }
+      70%  { clip-path: inset(0 0 0% 0);   background-color: #ffee00; filter: blur(12px) drop-shadow(0 0 12px #ffee00); }
+      75%  { clip-path: inset(0 0 100% 0); background-color: #00ff55; filter: blur(12px) drop-shadow(0 0 12px #00ff55); }
+      95%  { clip-path: inset(0 0 0% 0);   background-color: #00ff55; filter: blur(12px) drop-shadow(0 0 12px #00ff55); }
+      100% { clip-path: inset(0 0 100% 0); background-color: #ff0044; filter: blur(12px) drop-shadow(0 0 12px #ff0044); }
     }
 
-    /* 6. Color Cycle Breathing: Pulsing Breath with Hue Shifts (6.5s) */
+    /* 6. Color Cycle Breathing: Vivid Breath Cycles (6.5s) */
     .glow-breathing {
       animation: animColorBreathing6s 6.5s ease-in-out infinite;
     }
     @keyframes animColorBreathing6s {
       0%, 20%, 40%, 60%, 80%, 100% { opacity: 0.1; filter: blur(6px); }
-      10% { opacity: 0.95; background-color: #ff0055; filter: blur(14px) drop-shadow(0 0 14px #ff0055); }
-      30% { opacity: 0.95; background-color: #00e5ff; filter: blur(14px) drop-shadow(0 0 14px #00e5ff); }
-      50% { opacity: 0.95; background-color: #ffe600; filter: blur(14px) drop-shadow(0 0 14px #ffe600); }
-      70% { opacity: 0.95; background-color: #00e676; filter: blur(14px) drop-shadow(0 0 14px #00e676); }
-      90% { opacity: 0.95; background-color: #d500f9; filter: blur(14px) drop-shadow(0 0 14px #d500f9); }
+      10% { opacity: 0.95; background-color: #ff0044; filter: blur(14px) drop-shadow(0 0 16px #ff0044); }
+      30% { opacity: 0.95; background-color: #00f0ff; filter: blur(14px) drop-shadow(0 0 16px #00f0ff); }
+      50% { opacity: 0.95; background-color: #ffee00; filter: blur(14px) drop-shadow(0 0 16px #ffee00); }
+      70% { opacity: 0.95; background-color: #00ff55; filter: blur(14px) drop-shadow(0 0 16px #00ff55); }
+      90% { opacity: 0.95; background-color: #ee00ff; filter: blur(14px) drop-shadow(0 0 16px #ee00ff); }
     }
 
     .glow-off { display: none !important; }
@@ -244,7 +244,7 @@
           <div class="side-glow left glow-off" id="glow-left"></div>
           <div class="side-glow right glow-off" id="glow-right"></div>
 
-          <!-- Live DPI Stage Indicator Slit -->
+          <!-- Live High-Saturation DPI Stage Indicator Slit -->
           <div class="dpi-slit-led" id="live-dpi-led" title="Active DPI Stage Indicator"></div>
 
           <!-- Base Mouse Image -->
@@ -330,8 +330,8 @@
     </div>
 
     <div class="card">
-      <div class="card-title">DPI Stages & Indicator Colors</div>
-      <div class="card-desc">Selecting or clicking the physical DPI button dynamically updates the LED glow.</div>
+      <div class="card-title">DPI Stages & Pure Saturated LED Colors</div>
+      <div class="card-desc">Clicking the physical DPI button or selecting a stage updates the top indicator in real-time.</div>
       <div id="dpi-rows"></div>
     </div>
 
@@ -438,13 +438,14 @@
     "Disabled": [32, 0, 0, 0]
   };
 
+  // Pure saturated vibrant neon colors for high-visibility hardware replication
   const DPI_STAGE_COLORS = [
-    { name: "Red", hex: "#ea5e56" },
-    { name: "Green", hex: "#32aa70" },
-    { name: "Blue", hex: "#0066ff" },
-    { name: "Cyan", hex: "#00dde4" },
-    { name: "Orange", hex: "#f59c25" },
-    { name: "Purple", hex: "#cc00ff" }
+    { name: "Vivid Red", hex: "#ff0033" },
+    { name: "Neon Green", hex: "#00ff55" },
+    { name: "Electric Blue", hex: "#0055ff" },
+    { name: "Pure Cyan", hex: "#00f0ff" },
+    { name: "Vivid Amber", hex: "#ff7700" },
+    { name: "Neon Magenta", hex: "#ee00ff" }
   ];
 
   const STREAMER_MODES = [
@@ -464,7 +465,7 @@
 
   function updateDpiLedGlow(stageIndex) {
     activeDpiIndex = stageIndex;
-    const col = DPI_STAGE_COLORS[stageIndex] ? DPI_STAGE_COLORS[stageIndex].hex : "#32aa70";
+    const col = DPI_STAGE_COLORS[stageIndex] ? DPI_STAGE_COLORS[stageIndex].hex : "#00ff55";
     document.documentElement.style.setProperty('--dpi-glow', col);
 
     const radio = document.querySelector(`input[name="active_dpi"][value="${stageIndex}"]`);
@@ -501,7 +502,7 @@
           <label class="radio-label" style="font-weight: 600;">
             <input type="radio" name="active_dpi" value="${i}" ${i === activeDpiIndex ? "checked" : ""}
                    onchange="updateDpiLedGlow(${i})">
-            <span style="display:inline-block; width:10px; height:10px; border-radius:50%; background:${col.hex}; margin-right:4px;"></span>
+            <span style="display:inline-block; width:12px; height:12px; border-radius:50%; background:${col.hex}; box-shadow: 0 0 6px ${col.hex}; margin-right:6px;"></span>
             Stage ${i + 1}
           </label>
           <input type="range" id="dpi-slider-${i}" min="50" max="12000" step="50" value="${currentDpis[i]}"
@@ -562,7 +563,7 @@
     hidDevice.oninputreport = async (event) => {
       const data = new Uint8Array(event.data.buffer);
       
-      // 1. Live DPI & Polling Rate switch notification from physical button[cite: 1]
+      // 1. Live DPI & Polling Rate switch notification from physical button
       if (data[0] === 170 && data[1] === 250 && data[8] === 16) {
         const newDpiStage = data[9] - 1;
         const rateMap = { 0: 125, 1: 250, 2: 500, 3: 1000 };
@@ -572,12 +573,12 @@
         if (rateRadio) rateRadio.checked = true;
       }
       
-      // 2. Live Battery Update notification[cite: 1]
+      // 2. Live Battery Update notification
       if (data[0] === 170 && data[1] === 48) {
         document.getElementById("tele-bat").innerText = `${data[8]}% ${data[9] ? "(Charging)" : ""}`;
       }
 
-      // 3. Direct RGB Switch Notification (0xAA 0x21 / 170 33)[cite: 1]
+      // 3. Direct RGB Switch Notification (0xAA 0x21 / 170 33)
       if (data[0] === 170 && data[1] === 33) {
         const newMode = data[11] !== undefined ? data[11] : data[8];
         if (newMode >= 0 && newMode <= 6) {
@@ -666,33 +667,33 @@
   async function syncHardwareState() {
     if (!hidDevice || !hidDevice.opened) return;
 
-    // 1. Query Config (0x0E)[cite: 1]
+    // 1. Query Config (0x0E)
     const cfgPacket = new Array(65).fill(0);
     cfgPacket[1] = 0x55; cfgPacket[2] = 0x0E; cfgPacket[3] = 0xA5; cfgPacket[4] = 0x0B; cfgPacket[5] = 0x30;
     cfgPacket[6] = 0x01; cfgPacket[7] = 0x01; cfgPacket[8] = 0x01;
     const cfgRes = await sendAndReceive(cfgPacket);
 
-    // 2. Query Buttons (0x08)[cite: 1]
+    // 2. Query Buttons (0x08)
     const keyPacket = new Array(65).fill(0);
     keyPacket[1] = 0x55; keyPacket[2] = 0x08; keyPacket[3] = 0xA5; keyPacket[4] = 0x0B; keyPacket[5] = 0x20;
     const keyRes = await sendAndReceive(keyPacket);
 
-    // 3. Query Battery (0x30)[cite: 1]
+    // 3. Query Battery (0x30)
     const batPacket = new Array(65).fill(0);
     batPacket[1] = 0x55; batPacket[2] = 0x30; batPacket[3] = 0xA5; batPacket[4] = 0x0B; batPacket[5] = 0x2E;
     batPacket[6] = 0x01; batPacket[7] = 0x01; batPacket[8] = 0x01;
     const batRes = await sendAndReceive(batPacket);
 
-    // 4. Query Firmware (0x03)[cite: 1]
+    // 4. Query Firmware (0x03)
     const fwPacket = new Array(65).fill(0);
     fwPacket[1] = 0x55; fwPacket[2] = 0x03;
     const fwRes = await sendAndReceive(fwPacket);
 
     if (fwRes && fwRes.length >= 26) {
-      document.getElementById("tele-fw").innerText = `${String.fromCharCode(fwRes[23])}.${String.fromCharCode(fwRes[24])}.${String.fromCharCode(fwRes[25])}`;[cite: 1]
+      document.getElementById("tele-fw").innerText = `${String.fromCharCode(fwRes[23])}.${String.fromCharCode(fwRes[24])}.${String.fromCharCode(fwRes[25])}`;
     }
     if (batRes && batRes[0] === 0xAA && batRes[1] === 0x30) {
-      document.getElementById("tele-bat").innerText = `${batRes[8]}% ${batRes[9] ? "(Charging)" : ""}`;[cite: 1]
+      document.getElementById("tele-bat").innerText = `${batRes[8]}% ${batRes[9] ? "(Charging)" : ""}`;
     }
 
     if (cfgRes && cfgRes.length >= 55) {
