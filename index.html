@@ -3,113 +3,194 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>AJ139 V2 MC Web Driver</title>
+  <title>AJAZZ AJ139 V2 MC | Control Center</title>
   <style>
     :root {
-      --bg-dark: #121418;
-      --card-bg: #1e222a;
-      --card-border: #2d3340;
-      --accent: #ff5019;
-      --accent-hover: #e04412;
-      --text: #ffffff;
-      --text-dim: #9aa3b0;
+      --bg-base: #0a0c10;
+      --bg-surface: #12161f;
+      --bg-card: #181d28;
+      --bg-card-hover: #1f2533;
+      --border-subtle: #242b3b;
+      --border-focus: #3a455d;
+      
+      --accent: #ff4b1f;
+      --accent-hover: #ff6438;
+      --accent-glow: rgba(255, 75, 31, 0.35);
+      
+      --text-main: #f0f3f8;
+      --text-muted: #8b95a5;
+      --text-dim: #5c6677;
+      
+      --success: #00e676;
+      --danger: #ff3366;
+      
       --dpi-glow: #00ff55;
     }
 
-    * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
-    body { background-color: var(--bg-dark); color: var(--text); padding: 20px; display: flex; justify-content: center; }
-    .container { width: 100%; max-width: 920px; display: flex; flex-direction: column; gap: 16px; }
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: "Segoe UI", -apple-system, BlinkMacSystemFont, Roboto, sans-serif; }
+    body { background-color: var(--bg-base); color: var(--text-main); min-height: 100vh; display: flex; flex-direction: column; }
 
-    /* Telemetry Header */
-    .telemetry-card {
-      background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 12px;
-      padding: 16px 24px; display: flex; justify-content: space-between; align-items: center;
+    /* App Header */
+    header {
+      background: var(--bg-surface);
+      border-bottom: 1px solid var(--border-subtle);
+      padding: 12px 28px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: sticky;
+      top: 0;
+      z-index: 100;
     }
-    .status-badge { display: flex; align-items: center; gap: 8px; font-weight: bold; }
-    .dot { width: 10px; height: 10px; border-radius: 50%; background: #ef4444; }
-    .dot.connected { background: #22c55e; }
-
-    button.primary {
-      background: var(--accent); color: #fff; border: none; border-radius: 8px;
-      padding: 10px 18px; font-weight: 600; cursor: pointer; transition: 0.2s;
-    }
-    button.primary:hover { background: var(--accent-hover); }
-    button.secondary {
-      background: transparent; color: var(--text); border: 1px solid var(--card-border);
-      border-radius: 8px; padding: 8px 14px; font-size: 13px; cursor: pointer;
-    }
-    button.secondary:hover { border-color: var(--accent); color: var(--accent); }
-
-    /* Tabs */
-    .tabs { display: flex; gap: 8px; border-bottom: 1px solid var(--card-border); padding-bottom: 4px; }
-    .tab-btn {
-      background: transparent; border: none; color: var(--text-dim); padding: 10px 16px;
-      font-weight: 600; cursor: pointer; border-bottom: 2px solid transparent; transition: 0.2s;
-    }
-    .tab-btn.active { color: var(--accent); border-bottom-color: var(--accent); }
-    .tab-content { display: none; flex-direction: column; gap: 16px; }
-    .tab-content.active { display: flex; }
-
-    /* Cards */
-    .card { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 12px; padding: 18px; }
-    .card-title { font-size: 15px; font-weight: 700; margin-bottom: 4px; }
-    .card-desc { font-size: 13px; color: var(--text-dim); margin-bottom: 14px; }
-    .row { display: flex; justify-content: space-between; align-items: center; padding: 8px 0; border-bottom: 1px solid rgba(255,255,255,0.05); }
-    .row:last-child { border-bottom: none; }
-
-    /* Form Inputs */
-    input[type="range"] { flex: 1; margin: 0 14px; accent-color: var(--accent); }
-    select, input[type="number"] {
-      background: #121418; color: var(--text); border: 1px solid var(--card-border);
-      border-radius: 6px; padding: 6px 10px; font-size: 13px; outline: none;
-    }
-    select:focus, input[type="number"]:focus { border-color: var(--accent); }
-    input[type="checkbox"] { width: 16px; height: 16px; accent-color: var(--accent); cursor: pointer; }
-    .radio-group { display: flex; gap: 14px; align-items: center; }
-    .radio-label { display: flex; align-items: center; gap: 6px; font-size: 13px; cursor: pointer; }
-    .radio-label input { accent-color: var(--accent); }
-    .dpi-val { width: 75px; text-align: right; font-weight: bold; font-size: 13px; color: var(--accent); }
-    .action-btn-row { display: flex; justify-content: flex-end; gap: 10px; margin-top: 8px; }
-
-    /* --- Visual Interactive Mouse Stage --- */
-    .mouse-stage-wrapper {
-      position: relative; width: 100%; height: 530px; display: flex;
-      justify-content: center; align-items: center; overflow: hidden;
-    }
-    .mouse-stage {
-      position: relative; width: 500px; height: 500px;
-    }
-    .mouse-img {
-      width: 500px; height: 500px; object-fit: contain; position: absolute; top: 0; left: 0; z-index: 3;
-      filter: drop-shadow(0 8px 24px rgba(0,0,0,0.6));
+    .brand { display: flex; align-items: center; gap: 14px; }
+    .brand-logo { font-size: 16px; font-weight: 800; letter-spacing: 1.5px; color: var(--text-main); text-transform: uppercase; }
+    .brand-logo span { color: var(--accent); }
+    .device-tag {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--border-subtle);
+      padding: 3px 8px;
+      border-radius: 6px;
+      font-size: 11px;
+      color: var(--text-muted);
+      font-weight: 600;
     }
 
-    /* High-Vibrancy Saturated DPI Slit LED */
-    .dpi-slit-led {
+    .header-actions { display: flex; align-items: center; gap: 16px; }
+    .status-pill {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      padding: 6px 14px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 600;
+    }
+    .status-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--danger); box-shadow: 0 0 8px var(--danger); }
+    .status-dot.active { background: var(--success); box-shadow: 0 0 8px var(--success); }
+
+    .color-swatch-group {
+      display: flex;
+      align-items: center;
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      padding: 3px 6px;
+      border-radius: 20px;
+      gap: 6px;
+    }
+    .swatch-btn {
+      width: 18px; height: 18px; border-radius: 50%; border: 2px solid transparent; cursor: pointer; transition: 0.2s;
+    }
+    .swatch-btn.black { background: #111; }
+    .swatch-btn.white { background: #eee; }
+    .swatch-btn.active { border-color: var(--accent); transform: scale(1.15); }
+
+    /* Button Styles */
+    .btn {
+      background: var(--bg-card);
+      color: var(--text-main);
+      border: 1px solid var(--border-subtle);
+      border-radius: 8px;
+      padding: 8px 16px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      transition: all 0.2s;
+    }
+    .btn:hover { background: var(--bg-card-hover); border-color: var(--border-focus); }
+    .btn.primary { background: var(--accent); border-color: var(--accent); color: #fff; }
+    .btn.primary:hover { background: var(--accent-hover); box-shadow: 0 0 16px var(--accent-glow); }
+
+    /* Main Container & Navigation Tabs */
+    main { width: 100%; max-width: 1060px; margin: 0 auto; padding: 24px 20px 60px; flex: 1; }
+    .nav-tabs {
+      display: flex;
+      background: var(--bg-surface);
+      border: 1px solid var(--border-subtle);
+      border-radius: 12px;
+      padding: 4px;
+      margin-bottom: 24px;
+      gap: 4px;
+    }
+    .tab-item {
+      flex: 1;
+      background: transparent;
+      border: none;
+      color: var(--text-muted);
+      padding: 10px 14px;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 8px;
+      transition: 0.2s;
+    }
+    .tab-item:hover { color: var(--text-main); background: rgba(255,255,255,0.03); }
+    .tab-item.active { background: var(--bg-card); color: var(--text-main); border: 1px solid var(--border-subtle); shadow: 0 4px 12px rgba(0,0,0,0.3); }
+
+    .tab-panel { display: none; }
+    .tab-panel.active { display: block; }
+
+    /* Content Cards */
+    .dashboard-grid { display: grid; grid-template-columns: 1fr; gap: 20px; }
+    .card {
+      background: var(--bg-surface);
+      border: 1px solid var(--border-subtle);
+      border-radius: 14px;
+      padding: 22px;
+    }
+    .card-header { margin-bottom: 16px; }
+    .card-title { font-size: 15px; font-weight: 700; color: var(--text-main); }
+    .card-subtitle { font-size: 12px; color: var(--text-muted); margin-top: 2px; }
+
+    /* Interactive Mouse Stage */
+    .stage-wrapper {
+      position: relative;
+      width: 100%;
+      height: 520px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      overflow: hidden;
+    }
+    .stage-canvas { position: relative; width: 500px; height: 500px; }
+    .stage-mouse-img {
+      position: absolute; top: 0; left: 0; width: 500px; height: 500px;
+      object-fit: contain; z-index: 3; filter: drop-shadow(0 14px 28px rgba(0,0,0,0.7));
+    }
+
+    /* High-Vibrancy DPI Slit LED */
+    .stage-dpi-led {
       position: absolute; top: 67px; left: 242px; width: 16px; height: 6px;
       border-radius: 3px; background-color: var(--dpi-glow); z-index: 10;
       border: 1px solid rgba(0, 0, 0, 0.9);
-      box-shadow: 0 0 4px #ffffff, 0 0 10px var(--dpi-glow), 0 0 22px var(--dpi-glow), inset 0 0 3px #ffffff;
+      box-shadow: 0 0 4px #ffffff, 0 0 12px var(--dpi-glow), 0 0 24px var(--dpi-glow), inset 0 0 3px #ffffff;
       transition: background-color 0.2s ease, box-shadow 0.2s ease;
     }
 
-    /* --- Radiating Side RGB Strip (Lowered Position) --- */
-    .side-glow {
+    /* Radiating Side RGB Strip */
+    .stage-side-glow {
       position: absolute; top: 110px; width: 32px; height: 200px; border-radius: 26px;
       z-index: 2; pointer-events: none; filter: blur(12px); opacity: 0.95; transition: opacity 0.3s;
       transform-origin: top center;
     }
-    .side-glow.left { left: 134px; transform: rotate(2deg); }
-    .side-glow.right { right: 134px; transform: rotate(-2deg); }
+    .stage-side-glow.left { left: 134px; transform: rotate(2deg); }
+    .stage-side-glow.right { right: 134px; transform: rotate(-2deg); }
 
-    /* 1. Wave: Slower Reversed Multi-Color Motion */
+    /* CSS Lighting Animations */
     .glow-wave {
       background: linear-gradient(180deg, #ff0044, #cc00ff, #0055ff, #00ff55, #ffaa00, #ff0044);
       background-size: 100% 300%; animation: animWaveRev 6.5s linear infinite;
     }
     @keyframes animWaveRev { 0% { background-position: 0% 300%; } 100% { background-position: 0% 0%; } }
 
-    /* 2. Neon Spectrum: Full-Strip Simultaneous Cycle */
     .glow-neon {
       background: #ff0033; animation: animNeonCycle 6.5s linear infinite;
     }
@@ -123,7 +204,6 @@
       100% { background-color: #ff0033; filter: blur(12px) drop-shadow(0 0 14px #ff0033); }
     }
 
-    /* 3. Touring Chaser: Fast Christmas Chaser with 2.2s Rebound */
     .glow-chaser {
       background: repeating-linear-gradient(180deg,
         #ff0044 0px, #ff0044 14px,
@@ -139,58 +219,55 @@
       animation: animChaserBounceFast 2.2s ease-in-out infinite, animChaserHueFast 0.5s linear infinite;
     }
     @keyframes animChaserBounceFast {
-      0%   { background-position: 0% 0%; }
-      50%  { background-position: 0% 100%; }
+      0% { background-position: 0% 0%; }
+      50% { background-position: 0% 100%; }
       100% { background-position: 0% 0%; }
     }
     @keyframes animChaserHueFast {
-      0%   { filter: blur(11px) hue-rotate(0deg) drop-shadow(0 0 12px #ff0044); }
+      0% { filter: blur(11px) hue-rotate(0deg) drop-shadow(0 0 12px #ff0044); }
       100% { filter: blur(11px) hue-rotate(360deg) drop-shadow(0 0 12px #00ff55); }
     }
 
-    /* 4. Yo-Yo Ball: Fast Top-to-Bottom Color Overwrite per Cycle */
     .glow-yoyo {
       background: linear-gradient(180deg, #00f0ff 0%, #00f0ff 80%, transparent 100%);
       background-size: 100% 200%;
       animation: animYoYoWipeFast 0.65s linear infinite, animYoYoHueFast 2.6s steps(4) infinite;
     }
     @keyframes animYoYoWipeFast {
-      0%   { background-position: 0% -100%; opacity: 0.2; }
-      20%  { opacity: 1; }
+      0% { background-position: 0% -100%; opacity: 0.2; }
+      20% { opacity: 1; }
       100% { background-position: 0% 100%; opacity: 0.95; }
     }
     @keyframes animYoYoHueFast {
-      0%   { filter: blur(12px) hue-rotate(0deg); }
-      25%  { filter: blur(12px) hue-rotate(90deg); }
-      50%  { filter: blur(12px) hue-rotate(180deg); }
-      75%  { filter: blur(12px) hue-rotate(270deg); }
+      0% { filter: blur(12px) hue-rotate(0deg); }
+      25% { filter: blur(12px) hue-rotate(90deg); }
+      50% { filter: blur(12px) hue-rotate(180deg); }
+      75% { filter: blur(12px) hue-rotate(270deg); }
       100% { filter: blur(12px) hue-rotate(360deg); }
     }
 
-    /* 5. Directional Flow: Discrete 4-LED Cascade from Top to Bottom + Sudden Reset */
     .glow-flow {
       background: #ff0044;
       animation: animFlow4LEDCascade 0.95s cubic-bezier(0.2, 0.9, 0.3, 1) infinite, animFlowHueCycle 3.8s steps(4) infinite;
     }
     @keyframes animFlow4LEDCascade {
-      0%   { clip-path: inset(0 0 100% 0); opacity: 0; }
-      12%  { clip-path: inset(0 0 75% 0);  opacity: 1; }
-      28%  { clip-path: inset(0 0 50% 0);  opacity: 1; }
-      48%  { clip-path: inset(0 0 25% 0);  opacity: 1; }
-      68%  { clip-path: inset(0 0 0% 0);   opacity: 1; }
-      88%  { clip-path: inset(0 0 0% 0);   opacity: 1; }
-      98%  { clip-path: inset(0 0 0% 0);   opacity: 0; }
+      0% { clip-path: inset(0 0 100% 0); opacity: 0; }
+      12% { clip-path: inset(0 0 75% 0); opacity: 1; }
+      28% { clip-path: inset(0 0 50% 0); opacity: 1; }
+      48% { clip-path: inset(0 0 25% 0); opacity: 1; }
+      68% { clip-path: inset(0 0 0% 0); opacity: 1; }
+      88% { clip-path: inset(0 0 0% 0); opacity: 1; }
+      98% { clip-path: inset(0 0 0% 0); opacity: 0; }
       100% { clip-path: inset(0 0 100% 0); opacity: 0; }
     }
     @keyframes animFlowHueCycle {
-      0%   { filter: blur(12px) hue-rotate(0deg) drop-shadow(0 0 12px #ff0044); }
-      25%  { filter: blur(12px) hue-rotate(90deg) drop-shadow(0 0 12px #00f0ff); }
-      50%  { filter: blur(12px) hue-rotate(180deg) drop-shadow(0 0 12px #ffee00); }
-      75%  { filter: blur(12px) hue-rotate(270deg) drop-shadow(0 0 12px #00ff55); }
+      0% { filter: blur(12px) hue-rotate(0deg) drop-shadow(0 0 12px #ff0044); }
+      25% { filter: blur(12px) hue-rotate(90deg) drop-shadow(0 0 12px #00f0ff); }
+      50% { filter: blur(12px) hue-rotate(180deg) drop-shadow(0 0 12px #ffee00); }
+      75% { filter: blur(12px) hue-rotate(270deg) drop-shadow(0 0 12px #00ff55); }
       100% { filter: blur(12px) hue-rotate(360deg) drop-shadow(0 0 12px #ff0044); }
     }
 
-    /* 6. Color Cycle Breathing: Slow Relaxed Breath Cycle (28s) */
     .glow-breathing {
       animation: animColorBreathingSuperSlow 28s ease-in-out infinite;
     }
@@ -205,236 +282,281 @@
 
     .glow-off { display: none !important; }
 
-    /* SVG Overlay Lines */
-    .stage-svg-overlay {
-      position: absolute; top: 0; left: 0; width: 500px; height: 500px; z-index: 5; pointer-events: none;
-    }
-
-    /* Floating Button Dropdowns */
+    /* SVG Lines & Anchors */
+    .stage-svg { position: absolute; top: 0; left: 0; width: 500px; height: 500px; z-index: 5; pointer-events: none; }
     .btn-anchor {
-      position: absolute; z-index: 12; display: flex; flex-direction: column; gap: 2px;
-      background: rgba(22, 24, 29, 0.92); border: 1px solid var(--card-border);
-      border-radius: 8px; padding: 4px 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.5);
-      transition: border-color 0.2s;
+      position: absolute; z-index: 12; display: flex; flex-direction: column; gap: 3px;
+      background: rgba(18, 22, 31, 0.95); border: 1px solid var(--border-subtle);
+      border-radius: 8px; padding: 6px 10px; box-shadow: 0 6px 18px rgba(0,0,0,0.6);
     }
-    .btn-anchor:hover { border-color: var(--accent); }
     .btn-anchor-label { font-size: 11px; font-weight: 700; color: var(--text-dim); text-transform: uppercase; }
-    .btn-anchor select { padding: 3px 6px; font-size: 12px; height: 26px; }
+    .btn-anchor select {
+      background: var(--bg-base); color: var(--text-main); border: 1px solid var(--border-subtle);
+      border-radius: 5px; padding: 4px 6px; font-size: 12px; outline: none;
+    }
 
-    #anchor-0 { top: 90px; left: -10px; width: 135px; }
-    #anchor-4 { top: 180px; left: -15px; width: 135px; }
-    #anchor-3 { top: 250px; left: -15px; width: 135px; }
-    #anchor-1 { top: 90px; right: -10px; width: 135px; }
-    #anchor-2 { top: 155px; right: -15px; width: 135px; }
-    #anchor-5 { top: 220px; right: -15px; width: 135px; }
+    #anchor-0 { top: 90px; left: -10px; width: 140px; }
+    #anchor-4 { top: 180px; left: -15px; width: 140px; }
+    #anchor-3 { top: 250px; left: -15px; width: 140px; }
+    #anchor-1 { top: 90px; right: -10px; width: 140px; }
+    #anchor-2 { top: 155px; right: -15px; width: 140px; }
+    #anchor-5 { top: 220px; right: -15px; width: 140px; }
+
+    /* Form Controls */
+    .form-row { display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px solid rgba(255,255,255,0.04); }
+    .form-row:last-child { border-bottom: none; }
+    .form-label-wrap { display: flex; flex-direction: column; }
+    .form-label { font-size: 13px; font-weight: 600; color: var(--text-main); }
+    .form-desc { font-size: 12px; color: var(--text-muted); }
+
+    .segmented-control {
+      display: inline-flex; background: var(--bg-base); border: 1px solid var(--border-subtle); border-radius: 8px; padding: 3px; gap: 4px;
+    }
+    .segment-opt {
+      background: transparent; border: none; color: var(--text-muted); padding: 6px 16px; border-radius: 6px; font-size: 12px; font-weight: 600; cursor: pointer; transition: 0.2s;
+    }
+    .segment-opt.active { background: var(--bg-card); color: var(--text-main); border: 1px solid var(--border-subtle); }
+
+    /* Range Sliders */
+    .slider-wrap { display: flex; align-items: center; gap: 14px; flex: 1; }
+    input[type="range"] {
+      flex: 1; height: 4px; background: var(--border-subtle); border-radius: 2px; accent-color: var(--accent); outline: none; cursor: pointer;
+    }
+    .val-badge { min-width: 75px; text-align: right; font-size: 13px; font-weight: 700; color: var(--accent); }
+
+    /* Modern Toggle Switch */
+    .toggle { position: relative; width: 42px; height: 22px; cursor: pointer; }
+    .toggle input { opacity: 0; width: 0; height: 0; }
+    .slider { position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: var(--border-subtle); border-radius: 20px; transition: 0.3s; }
+    .slider:before { position: absolute; content: ""; height: 16px; width: 16px; left: 3px; bottom: 3px; background: #fff; border-radius: 50%; transition: 0.3s; }
+    .toggle input:checked + .slider { background: var(--accent); }
+    .toggle input:checked + .slider:before { transform: translateX(20px); }
+
+    /* Floating Toast Notification */
+    #toast-container { position: fixed; bottom: 24px; right: 24px; z-index: 1000; display: flex; flex-direction: column; gap: 8px; }
+    .toast {
+      background: var(--bg-surface); border: 1px solid var(--border-focus); color: var(--text-main);
+      padding: 12px 18px; border-radius: 8px; font-size: 13px; font-weight: 600;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.6); display: flex; align-items: center; gap: 10px;
+      animation: slideIn 0.3s ease forwards;
+    }
+    @keyframes slideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
   </style>
 </head>
 <body>
 
-<div class="container">
-  <!-- Telemetry Header -->
-  <div class="telemetry-card">
-    <div>
-      <div class="status-badge">
-        <div class="dot" id="conn-dot"></div>
+  <!-- App Header -->
+  <header>
+    <div class="brand">
+      <div class="brand-logo">AJAZZ <span>AJ139 V2 MC</span></div>
+      <div class="device-tag" id="header-fw">FW: --</div>
+    </div>
+    <div class="header-actions">
+      <div class="color-swatch-group">
+        <div class="swatch-btn black active" id="swatch-black" onclick="setShellColor('black.png')" title="Black Edition"></div>
+        <div class="swatch-btn white" id="swatch-white" onclick="setShellColor('white.png')" title="White Edition"></div>
+      </div>
+      <div class="status-pill">
+        <div class="status-dot" id="conn-dot"></div>
         <span id="conn-text">Disconnected</span>
+        <span id="header-battery" style="color: var(--text-muted); margin-left: 4px;">--%</span>
       </div>
-      <div style="font-size: 13px; color: var(--text-dim); margin-top: 4px;">
-        Mode: <span id="tele-mode">None</span> | FW: <span id="tele-fw">--</span> | Battery: <span id="tele-bat">--%</span>
+      <button class="btn" onclick="syncHardwareState()">Sync</button>
+      <button class="btn primary" id="btn-connect" onclick="connectDevice()">Connect</button>
+    </div>
+  </header>
+
+  <!-- Main View -->
+  <main>
+    <nav class="nav-tabs">
+      <button class="tab-item active" onclick="switchTab('keys')">Button Mapping</button>
+      <button class="tab-item" onclick="switchTab('dpi')">DPI & Performance</button>
+      <button class="tab-item" onclick="switchTab('rgb')">RGB Lighting Studio</button>
+      <button class="tab-item" onclick="switchTab('sensor')">Sensor & Timing</button>
+    </nav>
+
+    <!-- Tab 1: Buttons -->
+    <div class="tab-panel active" id="tab-keys">
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">Physical Button Assignments</div>
+          <div class="card-subtitle">Select actions to remap the 6 onboard physical switches.</div>
+        </div>
+        <div class="stage-wrapper">
+          <div class="stage-canvas">
+            <div class="stage-side-glow left glow-off" id="glow-left"></div>
+            <div class="stage-side-glow right glow-off" id="glow-right"></div>
+            <div class="stage-dpi-led" id="live-dpi-led"></div>
+            <img id="mouse-img" src="black.png" alt="Mouse" class="stage-mouse-img">
+            
+            <svg class="stage-svg" viewBox="0 0 500 500">
+              <circle cx="195" cy="130" r="4" fill="#ff4b1f"/>
+              <polyline points="125,108 160,108 195,130" stroke="#ff4b1f" stroke-width="1.5" fill="none"/>
+              <circle cx="145" cy="205" r="4" fill="#ff4b1f"/>
+              <polyline points="120,198 135,198 145,205" stroke="#ff4b1f" stroke-width="1.5" fill="none"/>
+              <circle cx="150" cy="260" r="4" fill="#ff4b1f"/>
+              <polyline points="120,268 138,268 150,260" stroke="#ff4b1f" stroke-width="1.5" fill="none"/>
+              <circle cx="305" cy="130" r="4" fill="#ff4b1f"/>
+              <polyline points="375,108 340,108 305,130" stroke="#ff4b1f" stroke-width="1.5" fill="none"/>
+              <circle cx="250" cy="125" r="4" fill="#ff4b1f"/>
+              <polyline points="380,172 310,172 250,125" stroke="#ff4b1f" stroke-width="1.5" fill="none"/>
+              <circle cx="250" cy="195" r="4" fill="#ff4b1f"/>
+              <polyline points="380,238 310,238 250,195" stroke="#ff4b1f" stroke-width="1.5" fill="none"/>
+            </svg>
+
+            <div class="btn-anchor" id="anchor-0"><span class="btn-anchor-label">1. Left Click</span><select id="btn-select-0"></select></div>
+            <div class="btn-anchor" id="anchor-4"><span class="btn-anchor-label">5. Forward</span><select id="btn-select-4"></select></div>
+            <div class="btn-anchor" id="anchor-3"><span class="btn-anchor-label">4. Backward</span><select id="btn-select-3"></select></div>
+            <div class="btn-anchor" id="anchor-1"><span class="btn-anchor-label">2. Right Click</span><select id="btn-select-1"></select></div>
+            <div class="btn-anchor" id="anchor-2"><span class="btn-anchor-label">3. Middle Click</span><select id="btn-select-2"></select></div>
+            <div class="btn-anchor" id="anchor-5"><span class="btn-anchor-label">6. DPI Button</span><select id="btn-select-5"></select></div>
+          </div>
+        </div>
+        <div style="display: flex; justify-content: flex-end; margin-top: 14px;">
+          <button class="btn primary" onclick="writeButtonMappings()">Save Button Mappings</button>
+        </div>
       </div>
     </div>
-    <div style="display: flex; gap: 8px; align-items: center;">
-      <div style="display: flex; align-items: center; gap: 6px; margin-right: 8px;">
-        <span style="font-size: 12px; color: var(--text-dim);">Color:</span>
-        <select id="select-mouse-color" onchange="changeMouseColor(this.value)">
-          <option value="black.png">Black</option>
-          <option value="white.png">White</option>
-        </select>
-      </div>
-      <button class="secondary" onclick="syncHardwareState()">Sync State</button>
-      <button class="primary" id="btn-connect" onclick="connectDevice()">Connect Mouse</button>
-    </div>
-  </div>
 
-  <!-- Tabs Navigation -->
-  <div class="tabs">
-    <button class="tab-btn active" onclick="switchTab('keys')">Button Mapping</button>
-    <button class="tab-btn" onclick="switchTab('dpi')">DPI & Rates</button>
-    <button class="tab-btn" onclick="switchTab('rgb')">RGB Streamer</button>
-    <button class="tab-btn" onclick="switchTab('sensor')">Sensor & Timing</button>
-  </div>
-
-  <!-- Tab 1: Interactive Visual Buttons Map -->
-  <div class="tab-content active" id="tab-keys">
-    <div class="card" style="padding: 10px;">
-      <div class="mouse-stage-wrapper">
-        <div class="mouse-stage">
-          <!-- Radiating Side RGB Strips -->
-          <div class="side-glow left glow-off" id="glow-left"></div>
-          <div class="side-glow right glow-off" id="glow-right"></div>
-
-          <!-- Live High-Saturation DPI Stage Indicator Slit -->
-          <div class="dpi-slit-led" id="live-dpi-led" title="Active DPI Stage Indicator"></div>
-
-          <!-- Base Mouse Image -->
-          <img id="mouse-img" src="black.png" alt="AJ139 Mouse" class="mouse-img" onerror="this.src='black.png';">
-
-          <!-- SVG Leader Lines -->
-          <svg class="stage-svg-overlay" viewBox="0 0 500 500">
-            <!-- Left Click (1) -->
-            <circle cx="195" cy="130" r="4" fill="#ff5019"/>
-            <polyline points="125,108 160,108 195,130" stroke="#ff5019" stroke-width="1.5" fill="none"/>
-
-            <!-- Forward (5) -->
-            <circle cx="145" cy="205" r="4" fill="#ff5019"/>
-            <polyline points="120,198 135,198 145,205" stroke="#ff5019" stroke-width="1.5" fill="none"/>
-
-            <!-- Backward (4) -->
-            <circle cx="150" cy="260" r="4" fill="#ff5019"/>
-            <polyline points="120,268 138,268 150,260" stroke="#ff5019" stroke-width="1.5" fill="none"/>
-
-            <!-- Right Click (2) -->
-            <circle cx="305" cy="130" r="4" fill="#ff5019"/>
-            <polyline points="375,108 340,108 305,130" stroke="#ff5019" stroke-width="1.5" fill="none"/>
-
-            <!-- Middle Click (3) -->
-            <circle cx="250" cy="125" r="4" fill="#ff5019"/>
-            <polyline points="380,172 310,172 250,125" stroke="#ff5019" stroke-width="1.5" fill="none"/>
-
-            <!-- DPI Button (6) -->
-            <circle cx="250" cy="195" r="4" fill="#ff5019"/>
-            <polyline points="380,238 310,238 250,195" stroke="#ff5019" stroke-width="1.5" fill="none"/>
-          </svg>
-
-          <!-- Floating Button Dropdowns -->
-          <div class="btn-anchor" id="anchor-0">
-            <span class="btn-anchor-label">1. Left Click</span>
-            <select id="btn-select-0"></select>
+    <!-- Tab 2: DPI & Polling Rate -->
+    <div class="tab-panel" id="tab-dpi">
+      <div class="dashboard-grid">
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">Report Rate (Polling Frequency)</div>
+            <div class="card-subtitle">Sensor updates per second sent to the host PC.</div>
           </div>
-
-          <div class="btn-anchor" id="anchor-4">
-            <span class="btn-anchor-label">5. Forward</span>
-            <select id="btn-select-4"></select>
+          <div class="segmented-control" id="poll-control">
+            <button class="segment-opt" onclick="setPolling(125)">125 Hz</button>
+            <button class="segment-opt" onclick="setPolling(250)">250 Hz</button>
+            <button class="segment-opt" onclick="setPolling(500)">500 Hz</button>
+            <button class="segment-opt active" onclick="setPolling(1000)">1000 Hz</button>
           </div>
+        </div>
 
-          <div class="btn-anchor" id="anchor-3">
-            <span class="btn-anchor-label">4. Backward</span>
-            <select id="btn-select-3"></select>
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">DPI Sensitivity Stages</div>
+            <div class="card-subtitle">Select active stage or adjust sensitivity values (50 to 12,000 DPI).</div>
           </div>
-
-          <div class="btn-anchor" id="anchor-1">
-            <span class="btn-anchor-label">2. Right Click</span>
-            <select id="btn-select-1"></select>
-          </div>
-
-          <div class="btn-anchor" id="anchor-2">
-            <span class="btn-anchor-label">3. Middle Click</span>
-            <select id="btn-select-2"></select>
-          </div>
-
-          <div class="btn-anchor" id="anchor-5">
-            <span class="btn-anchor-label">6. DPI Button</span>
-            <select id="btn-select-5"></select>
+          <div id="dpi-stage-rows"></div>
+          <div style="display: flex; justify-content: flex-end; margin-top: 18px;">
+            <button class="btn primary" onclick="writeFullConfig()">Save Performance Settings</button>
           </div>
         </div>
       </div>
     </div>
 
-    <div class="action-btn-row">
-      <button class="primary" onclick="writeButtonMappings()">Save Button Mappings to Mouse</button>
-    </div>
-  </div>
-
-  <!-- Tab 2: DPI & Polling Rate -->
-  <div class="tab-content" id="tab-dpi">
-    <div class="card">
-      <div class="card-title">Polling Rate</div>
-      <div class="card-desc">USB/2.4G Report frequency.</div>
-      <div class="radio-group" id="polling-rates">
-        <label class="radio-label"><input type="radio" name="polling" value="125"> 125 Hz</label>
-        <label class="radio-label"><input type="radio" name="polling" value="250"> 250 Hz</label>
-        <label class="radio-label"><input type="radio" name="polling" value="500"> 500 Hz</label>
-        <label class="radio-label"><input type="radio" name="polling" value="1000" checked> 1000 Hz</label>
-      </div>
-    </div>
-
-    <div class="card">
-      <div class="card-title">DPI Stages & Pure Saturated LED Colors</div>
-      <div class="card-desc">Clicking the physical DPI button or selecting a stage updates the top indicator in real-time.</div>
-      <div id="dpi-rows"></div>
-    </div>
-
-    <div class="action-btn-row">
-      <button class="primary" onclick="writeFullConfig()">Save DPI & Rates</button>
-    </div>
-  </div>
-
-  <!-- Tab 3: RGB Streamer Strip -->
-  <div class="tab-content" id="tab-rgb">
-    <div class="card">
-      <div class="card-title">Side Strip Lighting Animations (8 Addressable LEDs)</div>
-      <div class="card-desc">Built-in addressable streamer lighting animation presets with live hardware preview.</div>
-      <div id="rgb-modes-list"></div>
-    </div>
-    <div class="action-btn-row">
-      <button class="primary" onclick="writeFullConfig()">Save Light Mode to Memory</button>
-    </div>
-  </div>
-
-  <!-- Tab 4: Sensor & Timing -->
-  <div class="tab-content" id="tab-sensor">
-    <div class="card">
-      <div class="card-title">Sensor Enhancements</div>
-      <div class="row">
-        <span>Motion Sync (Synchronize frame reads with USB poll)</span>
-        <input type="checkbox" id="chk-motion-sync" checked>
-      </div>
-      <div class="row">
-        <span>Ripple Control (Smoothing algorithm)</span>
-        <input type="checkbox" id="chk-ripple">
-      </div>
-      <div class="row">
-        <span>Angle Snapping / Line Correction</span>
-        <input type="checkbox" id="chk-linesnap">
-      </div>
-      <div class="row">
-        <span>Esports High-Speed Tracking Mode</span>
-        <input type="checkbox" id="chk-esports">
-      </div>
-    </div>
-
-    <div class="card">
-      <div class="card-title">Timing & Behaviors</div>
-      <div class="row">
-        <span>Lift-Off Distance (LOD)</span>
-        <div class="radio-group">
-          <label class="radio-label"><input type="radio" name="lod" value="1" checked> 1 mm</label>
-          <label class="radio-label"><input type="radio" name="lod" value="2"> 2 mm</label>
+    <!-- Tab 3: RGB Lighting Studio -->
+    <div class="tab-panel" id="tab-rgb">
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">Addressable Streamer Lighting Modes</div>
+          <div class="card-subtitle">Select an animation preset to preview and flash to the internal RGB controller.</div>
+        </div>
+        <div id="rgb-mode-rows"></div>
+        <div style="display: flex; justify-content: flex-end; margin-top: 18px;">
+          <button class="btn primary" onclick="writeFullConfig()">Save Lighting to EEPROM</button>
         </div>
       </div>
-      <div class="row">
-        <span>Debounce Response Time (ms)</span>
-        <input type="number" id="num-debounce" min="0" max="20" value="8" style="width: 70px;">
-      </div>
-      <div class="row">
-        <span>Sleep Timeout (Minutes, 0 = Never)</span>
-        <input type="number" id="num-sleep" min="0" max="100" value="10" style="width: 70px;">
-      </div>
-      <div class="row">
-        <span>Invert Scroll Wheel Direction</span>
-        <input type="checkbox" id="chk-invert-scroll">
-      </div>
-      <div class="row">
-        <span>Move to Wake (Unchecked = Click to Wake)</span>
-        <input type="checkbox" id="chk-move-wake" checked>
-      </div>
     </div>
 
-    <div class="action-btn-row">
-      <button class="primary" onclick="writeFullConfig()">Save Sensor Settings</button>
+    <!-- Tab 4: Sensor & Timing -->
+    <div class="tab-panel" id="tab-sensor">
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">Advanced Sensor Features</div>
+          <div class="card-subtitle">Configure signal processing, motion synchronization, and LOD.</div>
+        </div>
+        
+        <div class="form-row">
+          <div class="form-label-wrap">
+            <div class="form-label">Motion Sync</div>
+            <div class="form-desc">Synchronize sensor frames with USB polling events.</div>
+          </div>
+          <label class="toggle"><input type="checkbox" id="chk-motion-sync" checked><span class="slider"></span></label>
+        </div>
+
+        <div class="form-row">
+          <div class="form-label-wrap">
+            <div class="form-label">Ripple Control</div>
+            <div class="form-desc">High-DPI trajectory smoothing.</div>
+          </div>
+          <label class="toggle"><input type="checkbox" id="chk-ripple"><span class="slider"></span></label>
+        </div>
+
+        <div class="form-row">
+          <div class="form-label-wrap">
+            <div class="form-label">Angle Snapping / Line Correction</div>
+            <div class="form-desc">Linear trajectory assist.</div>
+          </div>
+          <label class="toggle"><input type="checkbox" id="chk-linesnap"><span class="slider"></span></label>
+        </div>
+
+        <div class="form-row">
+          <div class="form-label-wrap">
+            <div class="form-label">Esports High-Speed Tracking Mode</div>
+            <div class="form-desc">Maintains high-performance sensor power rails.</div>
+          </div>
+          <label class="toggle"><input type="checkbox" id="chk-esports"><span class="slider"></span></label>
+        </div>
+
+        <div class="form-row">
+          <div class="form-label-wrap">
+            <div class="form-label">Lift-Off Distance (LOD)</div>
+            <div class="form-desc">Sensor cut-off tracking height.</div>
+          </div>
+          <div class="segmented-control" id="lod-control">
+            <button class="segment-opt active" onclick="setLOD(1)">1 mm</button>
+            <button class="segment-opt" onclick="setLOD(2)">2 mm</button>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-label-wrap">
+            <div class="form-label">Button Debounce Delay</div>
+            <div class="form-desc">Switch contact filtering (0 to 20 ms).</div>
+          </div>
+          <div class="slider-wrap" style="max-width: 260px;">
+            <input type="range" id="rng-debounce" min="0" max="20" value="8" oninput="document.getElementById('lbl-debounce').innerText = this.value + ' ms'">
+            <span class="val-badge" id="lbl-debounce">8 ms</span>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-label-wrap">
+            <div class="form-label">Inactivity Sleep Timeout</div>
+            <div class="form-desc">Minutes before entering standby (0 = Never Sleep).</div>
+          </div>
+          <div class="slider-wrap" style="max-width: 260px;">
+            <input type="range" id="rng-sleep" min="0" max="60" value="10" oninput="document.getElementById('lbl-sleep').innerText = this.value === '0' ? 'Never' : this.value + ' min'">
+            <span class="val-badge" id="lbl-sleep">10 min</span>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-label-wrap">
+            <div class="form-label">Invert Scroll Wheel Direction</div>
+          </div>
+          <label class="toggle"><input type="checkbox" id="chk-invert-scroll"><span class="slider"></span></label>
+        </div>
+
+        <div class="form-row">
+          <div class="form-label-wrap">
+            <div class="form-label">Move to Wake</div>
+            <div class="form-desc">Wake mouse by moving instead of clicking.</div>
+          </div>
+          <label class="toggle"><input type="checkbox" id="chk-move-wake" checked><span class="slider"></span></label>
+        </div>
+
+        <div style="display: flex; justify-content: flex-end; margin-top: 18px;">
+          <button class="btn primary" onclick="writeFullConfig()">Save Advanced Settings</button>
+        </div>
+      </div>
     </div>
-  </div>
-</div>
+  </main>
+
+  <div id="toast-container"></div>
 
 <script>
   const TARGET_FILTERS = [
@@ -483,85 +605,116 @@
     { label: "Yo-Yo Bouncing Ball (悠悠球)", val: 3, class: "glow-yoyo" },
     { label: "Directional Flow (单向流动)", val: 4, class: "glow-flow" },
     { label: "Color Cycle Breathing (幻彩呼吸)", val: 5, class: "glow-breathing" },
-    { label: "Turn Off LED Strip (关闭灯光)", val: 6, class: "glow-off" }
+    { label: "Turn Off Side Strip (关闭灯光)", val: 6, class: "glow-off" }
   ];
 
   let hidDevice = null;
   let activeStreamerMode = 6;
   let currentDpis = [800, 1600, 2400, 3200, 5000, 12000];
   let activeDpiIndex = 1;
+  let activePolling = 1000;
+  let activeLOD = 1;
+
+  function showToast(msg) {
+    const container = document.getElementById("toast-container");
+    const toast = document.createElement("div");
+    toast.className = "toast";
+    toast.innerText = msg;
+    container.appendChild(toast);
+    setTimeout(() => { toast.style.opacity = '0'; setTimeout(() => toast.remove(), 300); }, 2500);
+  }
+
+  function setShellColor(fileName) {
+    document.getElementById("mouse-img").src = fileName;
+    document.getElementById("swatch-black").classList.toggle("active", fileName.includes("black"));
+    document.getElementById("swatch-white").classList.toggle("active", fileName.includes("white"));
+    localStorage.setItem("aj139_mouse_shell", fileName);
+  }
+
+  function switchTab(tabId) {
+    document.querySelectorAll(".tab-item").forEach(b => b.classList.remove("active"));
+    document.querySelectorAll(".tab-panel").forEach(p => p.classList.remove("active"));
+    event.currentTarget.classList.add("active");
+    document.getElementById(`tab-${tabId}`).classList.add("active");
+  }
 
   function updateDpiLedGlow(stageIndex) {
     activeDpiIndex = stageIndex;
-    const col = DPI_STAGE_COLORS[stageIndex] ? DPI_STAGE_COLORS[stageIndex].hex : "#00ff55";
+    const col = DPI_STAGE_COLORS[stageIndex]?.hex || "#00ff55";
     document.documentElement.style.setProperty('--dpi-glow', col);
-
-    const radio = document.querySelector(`input[name="active_dpi"][value="${stageIndex}"]`);
-    if (radio) radio.checked = true;
+    
+    document.querySelectorAll(".stage-radio").forEach((r, idx) => {
+      r.checked = (idx === stageIndex);
+    });
   }
 
   function updateSideGlowClass(modeVal) {
     activeStreamerMode = modeVal;
     const item = STREAMER_MODES.find(m => m.val === modeVal) || STREAMER_MODES[6];
-    const left = document.getElementById("glow-left");
-    const right = document.getElementById("glow-right");
-
-    left.className = `side-glow left ${item.class}`;
-    right.className = `side-glow right ${item.class}`;
+    document.getElementById("glow-left").className = `stage-side-glow left ${item.class}`;
+    document.getElementById("glow-right").className = `stage-side-glow right ${item.class}`;
   }
 
-  function changeMouseColor(fileName) {
-    document.getElementById("mouse-img").src = fileName;
-    localStorage.setItem("aj139_mouse_color", fileName);
+  function setPolling(rate) {
+    activePolling = rate;
+    document.querySelectorAll("#poll-control .segment-opt").forEach(btn => {
+      btn.classList.toggle("active", btn.innerText.includes(rate.toString()));
+    });
+  }
+
+  function setLOD(lod) {
+    activeLOD = lod;
+    document.querySelectorAll("#lod-control .segment-opt").forEach(btn => {
+      btn.classList.toggle("active", btn.innerText.startsWith(lod.toString()));
+    });
   }
 
   function initUI() {
-    const savedColor = localStorage.getItem("aj139_mouse_color") || "black.png";
-    document.getElementById("select-mouse-color").value = savedColor;
-    changeMouseColor(savedColor);
+    const savedShell = localStorage.getItem("aj139_mouse_shell") || "black.png";
+    setShellColor(savedShell);
 
-    // Build DPI Tab rows
-    const dpiContainer = document.getElementById("dpi-rows");
+    // Build DPI Rows
+    const dpiContainer = document.getElementById("dpi-stage-rows");
     dpiContainer.innerHTML = "";
     for (let i = 0; i < 6; i++) {
       const col = DPI_STAGE_COLORS[i];
       dpiContainer.innerHTML += `
-        <div class="row">
-          <label class="radio-label" style="font-weight: 600;">
-            <input type="radio" name="active_dpi" value="${i}" ${i === activeDpiIndex ? "checked" : ""}
-                   onchange="updateDpiLedGlow(${i})">
-            <span style="display:inline-block; width:12px; height:12px; border-radius:50%; background:${col.hex}; box-shadow: 0 0 6px ${col.hex}; margin-right:6px;"></span>
-            Stage ${i + 1}
+        <div class="form-row">
+          <label style="display:flex; align-items:center; gap:8px; cursor:pointer; width:130px;">
+            <input type="radio" name="dpi_active" class="stage-radio" ${i === activeDpiIndex ? "checked" : ""} onchange="updateDpiLedGlow(${i})">
+            <span style="display:inline-block; width:12px; height:12px; border-radius:50%; background:${col.hex}; box-shadow:0 0 8px ${col.hex};"></span>
+            <span style="font-size:13px; font-weight:700;">Stage ${i + 1}</span>
           </label>
-          <input type="range" id="dpi-slider-${i}" min="50" max="12000" step="50" value="${currentDpis[i]}"
-                 oninput="onDpiSliderChange(${i}, this.value)">
-          <span class="dpi-val" id="dpi-val-${i}">${currentDpis[i]} DPI</span>
+          <div class="slider-wrap">
+            <input type="range" id="dpi-rng-${i}" min="50" max="12000" step="50" value="${currentDpis[i]}"
+                   oninput="currentDpis[${i}] = parseInt(this.value); document.getElementById('dpi-lbl-${i}').innerText = this.value + ' DPI'">
+            <span class="val-badge" id="dpi-lbl-${i}">${currentDpis[i]} DPI</span>
+          </div>
         </div>
       `;
     }
 
-    // Build RGB Streamer options
-    const rgbContainer = document.getElementById("rgb-modes-list");
+    // Build RGB Rows
+    const rgbContainer = document.getElementById("rgb-mode-rows");
     rgbContainer.innerHTML = "";
     STREAMER_MODES.forEach(m => {
       rgbContainer.innerHTML += `
-        <div class="row">
-          <label class="radio-label">
-            <input type="radio" name="streamer_mode" value="${m.val}" ${m.val === activeStreamerMode ? "checked" : ""}
-                   onchange="testStreamerMode(${m.val})"> ${m.label}
+        <div class="form-row">
+          <label style="display:flex; align-items:center; gap:10px; cursor:pointer;">
+            <input type="radio" name="streamer_mode" value="${m.val}" ${m.val === activeStreamerMode ? "checked" : ""} onchange="testStreamerMode(${m.val})">
+            <span style="font-size:13px; font-weight:600;">${m.label}</span>
           </label>
-          <button class="secondary" onclick="testStreamerMode(${m.val})">Test Now</button>
+          <button class="btn" style="padding:4px 12px; font-size:12px;" onclick="testStreamerMode(${m.val})">Preview</button>
         </div>
       `;
     });
 
-    // Populate Button Dropdowns
+    // Populate Buttons
     const optionsHtml = Object.keys(KEY_BINDINGS).map(k => `<option value="${k}">${k}</option>`).join("");
     for (let i = 0; i < 6; i++) {
       const el = document.getElementById(`btn-select-${i}`);
       if (el) el.innerHTML = optionsHtml;
     }
-
     document.getElementById("btn-select-0").value = "Left Click";
     document.getElementById("btn-select-1").value = "Right Click";
     document.getElementById("btn-select-2").value = "Middle Click";
@@ -573,80 +726,66 @@
     updateSideGlowClass(activeStreamerMode);
   }
 
-  function switchTab(tabId) {
-    document.querySelectorAll(".tab-btn").forEach(b => b.classList.remove("active"));
-    document.querySelectorAll(".tab-content").forEach(c => c.classList.remove("active"));
-    event.target.classList.add("active");
-    document.getElementById(`tab-${tabId}`).classList.add("active");
-  }
-
-  function onDpiSliderChange(idx, val) {
-    currentDpis[idx] = parseInt(val);
-    document.getElementById(`dpi-val-${idx}`).innerText = `${val} DPI`;
-  }
-
-  // --- Real-time Hardware Event Listener ---
-  function setupHardwareListener() {
-    if (!hidDevice) return;
-    hidDevice.oninputreport = (event) => {
-      const data = new Uint8Array(event.data.buffer);
-
-      // Only parse explicit hardware state broadcasts (ignore all motion/pointer reports)
-      if (data[0] === 0xAA && data[1] === 0xFA && data[8] === 0x10) {
-        const newDpiStage = data[9] - 1;
-        const rateMap = { 0: 125, 1: 250, 2: 500, 3: 1000 };
-        const newRate = rateMap[data[10] - 1] || 1000;
-        updateDpiLedGlow(newDpiStage);
-        const rateRadio = document.querySelector(`input[name="polling"][value="${newRate}"]`);
-        if (rateRadio) rateRadio.checked = true;
-      } else if (data[0] === 0xAA && data[1] === 0x30) {
-        document.getElementById("tele-bat").innerText = `${data[8]}% ${data[9] ? "(Charging)" : ""}`;
-      } else if (data[0] === 0xAA && data[1] === 0x21) {
-        const newMode = data[11] !== undefined ? data[11] : data[8];
-        if (newMode >= 0 && newMode <= 6) {
-          updateSideGlowClass(newMode);
-          const streamerRadio = document.querySelector(`input[name="streamer_mode"][value="${newMode}"]`);
-          if (streamerRadio) streamerRadio.checked = true;
-        }
-      }
-    };
-  }
-
-  // --- Strict Non-Colliding USB/RF Read ---
-  async function sendAndReceive(packet, expectedCmd, timeoutMs = 350) {
-    if (!hidDevice || !hidDevice.opened) return null;
+  // --- WebHID Direct Transaction Helper ---
+  function transact(sendPkt, matchFn, timeoutMs = 300) {
     return new Promise(async (resolve) => {
+      if (!hidDevice || !hidDevice.opened) return resolve(null);
       let timer = null;
-      const onReport = (event) => {
+      const handler = (event) => {
         const data = new Uint8Array(event.data.buffer);
-        // Strictly ensure packet starts with 0xAA and matches our command ID
-        if (data[0] === 0xAA && data[1] === expectedCmd) {
+        if (matchFn(data)) {
           clearTimeout(timer);
-          hidDevice.removeEventListener("inputreport", onReport);
+          hidDevice.removeEventListener("inputreport", handler);
           resolve(data);
         }
       };
-
-      hidDevice.addEventListener("inputreport", onReport);
+      hidDevice.addEventListener("inputreport", handler);
       timer = setTimeout(() => {
-        hidDevice.removeEventListener("inputreport", onReport);
+        hidDevice.removeEventListener("inputreport", handler);
         resolve(null);
       }, timeoutMs);
 
       try {
-        const reportData = new Uint8Array(packet.slice(1));
-        await hidDevice.sendReport(0, reportData);
-      } catch (err) {
+        await hidDevice.sendReport(0, new Uint8Array(sendPkt.slice(1)));
+      } catch (e) {
         clearTimeout(timer);
-        hidDevice.removeEventListener("inputreport", onReport);
+        hidDevice.removeEventListener("inputreport", handler);
         resolve(null);
       }
     });
   }
 
+  function setupGlobalReportListener() {
+    if (!hidDevice) return;
+    hidDevice.oninputreport = (event) => {
+      const data = new Uint8Array(event.data.buffer);
+      // DPI Stage push
+      if (data[0] === 0xAA && data[1] === 0xFA && data[8] === 0x10) {
+        const newDpiStage = data[9] - 1;
+        const rateMap = { 0: 125, 1: 250, 2: 500, 3: 1000 };
+        updateDpiLedGlow(newDpiStage);
+        setPolling(rateMap[data[10] - 1] || 1000);
+      }
+      // Battery push
+      else if (data[0] === 0xAA && data[1] === 0x30) {
+        document.getElementById("header-battery").innerText = `${data[8]}% ${data[9] ? "(⚡)" : ""}`;
+      }
+      // Direct RGB physical switch push
+      else if (data[0] === 0xAA && data[1] === 0x21) {
+        const newMode = data[11] !== undefined ? data[11] : data[8];
+        if (newMode >= 0 && newMode <= 6) {
+          activeStreamerMode = newMode;
+          updateSideGlowClass(newMode);
+          const r = document.querySelector(`input[name="streamer_mode"][value="${newMode}"]`);
+          if (r) r.checked = true;
+        }
+      }
+    };
+  }
+
   async function connectDevice() {
     if (!navigator.hid) {
-      alert("WebHID is not supported. Please use Chrome, Edge, Brave, or Opera.");
+      alert("WebHID is not supported. Please use a Chromium-based browser (Chrome, Edge, Brave).");
       return;
     }
     try {
@@ -654,101 +793,92 @@
       if (devices.length === 0) return;
       hidDevice = devices[0];
       if (!hidDevice.opened) await hidDevice.open();
-      updateStatusHeader(true);
-      setupHardwareListener();
-      await syncHardwareState();
-    } catch (err) {
-      console.error("Connection failed:", err);
-      alert("Failed to connect to mouse: " + err.message);
-    }
-  }
 
-  function updateStatusHeader(connected) {
-    const dot = document.getElementById("conn-dot");
-    const txt = document.getElementById("conn-text");
-    if (connected && hidDevice) {
-      dot.className = "dot connected";
+      document.getElementById("conn-dot").className = "status-dot active";
       const isWireless = hidDevice.vendorId === 0xA8A5;
-      txt.innerText = "Connected (" + (isWireless ? "2.4G Wireless" : "USB Wired") + ")";
-      document.getElementById("tele-mode").innerText = isWireless ? "2.4G Dongle" : "USB Wired";
-    } else {
-      dot.className = "dot";
-      txt.innerText = "Disconnected";
-      document.getElementById("tele-mode").innerText = "None";
-      document.getElementById("tele-fw").innerText = "--";
-      document.getElementById("tele-bat").innerText = "--%";
+      document.getElementById("conn-text").innerText = isWireless ? "2.4G Wireless" : "USB Wired";
+      
+      setupGlobalReportListener();
+      await syncHardwareState();
+      showToast("Connected to AJ139 V2 MC");
+    } catch (err) {
+      console.error("Connect failed:", err);
+      showToast("Connection failed: " + err.message);
     }
   }
 
   async function syncHardwareState() {
     if (!hidDevice || !hidDevice.opened) return;
 
-    // 1. Query Config (0x0E)
+    // 1. Query Config (Cmd 0x0E)
     const cfgPacket = new Array(65).fill(0);
     cfgPacket[1] = 0x55; cfgPacket[2] = 0x0E; cfgPacket[3] = 0xA5; cfgPacket[4] = 0x0B; cfgPacket[5] = 0x30;
     cfgPacket[6] = 0x01; cfgPacket[7] = 0x01; cfgPacket[8] = 0x01;
-    const cfgRes = await sendAndReceive(cfgPacket, 0x0E);
+    const cfgRes = await transact(cfgPacket, d => d[0] === 0xAA && d[1] === 0x0E);
 
-    // 2. Query Buttons (0x08)
+    // 2. Query Buttons (Cmd 0x08)
     const keyPacket = new Array(65).fill(0);
     keyPacket[1] = 0x55; keyPacket[2] = 0x08; keyPacket[3] = 0xA5; keyPacket[4] = 0x0B; keyPacket[5] = 0x20;
-    const keyRes = await sendAndReceive(keyPacket, 0x08);
+    const keyRes = await transact(keyPacket, d => d[0] === 0xAA && d[1] === 0x08);
 
-    // 3. Query Battery (0x30)
+    // 3. Query Battery (Cmd 0x30)
     const batPacket = new Array(65).fill(0);
     batPacket[1] = 0x55; batPacket[2] = 0x30; batPacket[3] = 0xA5; batPacket[4] = 0x0B; batPacket[5] = 0x2E;
     batPacket[6] = 0x01; batPacket[7] = 0x01; batPacket[8] = 0x01;
-    const batRes = await sendAndReceive(batPacket, 0x30);
+    const batRes = await transact(batPacket, d => d[0] === 0xAA && d[1] === 0x30);
 
-    // 4. Query Firmware (0x03)
+    // 4. Query Firmware (Cmd 0x03)
     const fwPacket = new Array(65).fill(0);
     fwPacket[1] = 0x55; fwPacket[2] = 0x03;
-    const fwRes = await sendAndReceive(fwPacket, 0x03);
+    const fwRes = await transact(fwPacket, d => d.length >= 26);
 
     if (fwRes && fwRes.length >= 26) {
-      document.getElementById("tele-fw").innerText = `${String.fromCharCode(fwRes[23])}.${String.fromCharCode(fwRes[24])}.${String.fromCharCode(fwRes[25])}`;
+      document.getElementById("header-fw").innerText = `FW: ${String.fromCharCode(fwRes[23])}.${String.fromCharCode(fwRes[24])}.${String.fromCharCode(fwRes[25])}`;
     }
-    if (batRes && batRes[0] === 0xAA && batRes[1] === 0x30) {
-      document.getElementById("tele-bat").innerText = `${batRes[8]}% ${batRes[9] ? "(Charging)" : ""}`;
+    if (batRes && batRes[0] === 0xAA) {
+      document.getElementById("header-battery").innerText = `${batRes[8]}% ${batRes[9] ? "(⚡)" : ""}`;
     }
 
     if (cfgRes && cfgRes.length >= 55) {
-      updateSideGlowClass(cfgRes[9]);
-      const streamerRadio = document.querySelector(`input[name="streamer_mode"][value="${cfgRes[9]}"]`);
-      if (streamerRadio) streamerRadio.checked = true;
+      // Decode Light Mode
+      activeStreamerMode = (cfgRes[9] >= 0 && cfgRes[9] <= 6) ? cfgRes[9] : 6;
+      updateSideGlowClass(activeStreamerMode);
+      const r = document.querySelector(`input[name="streamer_mode"][value="${activeStreamerMode}"]`);
+      if (r) r.checked = true;
 
+      // Decode Polling Rate
       const rateMap = { 0: 125, 1: 250, 2: 500, 3: 1000 };
-      const rateVal = rateMap[cfgRes[10] - 1] || 1000;
-      const rateRadio = document.querySelector(`input[name="polling"][value="${rateVal}"]`);
-      if (rateRadio) rateRadio.checked = true;
+      setPolling(rateMap[cfgRes[10] - 1] || 1000);
 
-      const activeStage = Math.max(0, cfgRes[12] - 1);
-      updateDpiLedGlow(activeStage);
-
+      // Decode DPI
+      activeDpiIndex = Math.max(0, cfgRes[12] - 1);
+      updateDpiLedGlow(activeDpiIndex);
       for (let i = 0; i < 6; i++) {
         const dpi = cfgRes[13 + i * 2] | (cfgRes[14 + i * 2] << 8);
         if (dpi > 0) {
           currentDpis[i] = dpi;
-          document.getElementById(`dpi-slider-${i}`).value = dpi;
-          document.getElementById(`dpi-val-${i}`).innerText = `${dpi} DPI`;
+          document.getElementById(`dpi-rng-${i}`).value = dpi;
+          document.getElementById(`dpi-lbl-${i}`).innerText = `${dpi} DPI`;
         }
       }
 
+      // Sensor Flags
       const sensorFlag = cfgRes[50];
       document.getElementById("chk-motion-sync").checked = !!(sensorFlag & 0x20);
       document.getElementById("chk-ripple").checked = !!(sensorFlag & 0x10);
       document.getElementById("chk-linesnap").checked = !!(sensorFlag & 0x01);
       document.getElementById("chk-esports").checked = !!(cfgRes[53] & 0x01);
 
-      const lodRadio = document.querySelector(`input[name="lod"][value="${cfgRes[49]}"]`);
-      if (lodRadio) lodRadio.checked = true;
-      document.getElementById("num-debounce").value = cfgRes[51];
-      document.getElementById("num-sleep").value = cfgRes[52];
+      setLOD(cfgRes[49] === 2 ? 2 : 1);
+      document.getElementById("rng-debounce").value = cfgRes[51];
+      document.getElementById("lbl-debounce").innerText = cfgRes[51] + " ms";
+      document.getElementById("rng-sleep").value = cfgRes[52];
+      document.getElementById("lbl-sleep").innerText = cfgRes[52] === 0 ? "Never" : cfgRes[52] + " min";
       document.getElementById("chk-invert-scroll").checked = !!cfgRes[48];
       document.getElementById("chk-move-wake").checked = !!(cfgRes[54] & 0x01);
     }
 
-    if (keyRes && keyRes.length >= 32 && keyRes[0] === 0xAA && keyRes[1] === 0x08) {
+    if (keyRes && keyRes.length >= 32) {
       const kData = keyRes.slice(8);
       for (let i = 0; i < 6; i++) {
         const t = kData[4 * i], c1 = kData[4 * i + 1], c2 = kData[4 * i + 2], c3 = kData[4 * i + 3];
@@ -761,33 +891,34 @@
         }
       }
     }
+    showToast("Hardware state synchronized");
   }
 
   async function testStreamerMode(modeVal) {
-    updateSideGlowClass(modeVal);
+    activeStreamerMode = parseInt(modeVal);
+    updateSideGlowClass(activeStreamerMode);
     if (!hidDevice || !hidDevice.opened) return;
     try {
       const livePacket = new Array(65).fill(0);
-      livePacket[1] = 0x55; livePacket[2] = 0x21; livePacket[5] = 0x03; livePacket[11] = modeVal;
-      const reportData = new Uint8Array(livePacket.slice(1));
-      await hidDevice.sendReport(0, reportData);
+      livePacket[1] = 0x55;
+      livePacket[2] = 0x21;
+      livePacket[5] = 0x03;
+      livePacket[11] = activeStreamerMode;
+      await hidDevice.sendReport(0, new Uint8Array(livePacket.slice(1)));
     } catch (e) {
-      console.warn("Live test error:", e);
+      console.warn("Live test failed:", e);
     }
   }
 
   async function writeFullConfig() {
     if (!hidDevice || !hidDevice.opened) {
-      alert("Mouse is not connected.");
+      showToast("Connect mouse first");
       return;
     }
 
     const pollingMap = { 125: 1, 250: 2, 500: 3, 1000: 4 };
-    const selectedRate = parseInt(document.querySelector('input[name="polling"]:checked').value);
-    const activeStage = parseInt(document.querySelector('input[name="active_dpi"]:checked').value);
-    const lodVal = parseInt(document.querySelector('input[name="lod"]:checked').value);
-    const debounceVal = parseInt(document.getElementById("num-debounce").value);
-    const sleepVal = parseInt(document.getElementById("num-sleep").value);
+    const debounceVal = parseInt(document.getElementById("rng-debounce").value);
+    const sleepVal = parseInt(document.getElementById("rng-sleep").value);
 
     let sensorFlag = 0;
     if (document.getElementById("chk-linesnap").checked) sensorFlag |= 0x01;
@@ -795,12 +926,19 @@
     if (document.getElementById("chk-motion-sync").checked) sensorFlag |= 0x20;
 
     const pkt = new Array(65).fill(0);
-    pkt[1] = 0x55; pkt[2] = 0x0F; pkt[3] = 0xAE; pkt[4] = 0x0A; pkt[5] = 0x30;
-    pkt[6] = 0x01; pkt[7] = 0x01; pkt[8] = 0x01;
+    pkt[1] = 0x55;
+    pkt[2] = 0x0F;
+    pkt[3] = 0xAE;
+    pkt[4] = 0x0A;
+    pkt[5] = 0x30;
+    pkt[6] = 0x01;
+    pkt[7] = 0x01;
+    pkt[8] = 0x01;
+    pkt[9] = 0x00;
     pkt[10] = activeStreamerMode;
-    pkt[11] = pollingMap[selectedRate] || 4;
+    pkt[11] = pollingMap[activePolling] || 4;
     pkt[12] = 6;
-    pkt[13] = activeStage + 1;
+    pkt[13] = activeDpiIndex + 1;
 
     for (let i = 0; i < 6; i++) {
       pkt[14 + i * 2] = currentDpis[i] & 0xFF;
@@ -808,27 +946,33 @@
     }
 
     pkt[49] = document.getElementById("chk-invert-scroll").checked ? 1 : 0;
-    pkt[50] = lodVal;
+    pkt[50] = activeLOD;
     pkt[51] = sensorFlag;
     pkt[52] = debounceVal;
     pkt[53] = sleepVal;
     pkt[54] = document.getElementById("chk-esports").checked ? 1 : 0;
     pkt[55] = document.getElementById("chk-move-wake").checked ? 1 : 0;
 
-    const reportData = new Uint8Array(pkt.slice(1));
-    await hidDevice.sendReport(0, reportData);
-    alert("Configuration successfully saved to mouse memory.");
+    try {
+      await hidDevice.sendReport(0, new Uint8Array(pkt.slice(1)));
+      showToast("Configuration saved to onboard memory");
+    } catch (err) {
+      showToast("Write failed: " + err.message);
+    }
   }
 
   async function writeButtonMappings() {
     if (!hidDevice || !hidDevice.opened) {
-      alert("Mouse is not connected.");
+      showToast("Connect mouse first");
       return;
     }
 
-    // Must be 65 elements so that slice(1) outputs exactly 64 bytes
     const pkt = new Array(65).fill(0);
-    pkt[1] = 0x55; pkt[2] = 0x09; pkt[3] = 0xA5; pkt[4] = 0x22; pkt[5] = 0x20;
+    pkt[1] = 0x55;
+    pkt[2] = 0x09;
+    pkt[3] = 0xA5;
+    pkt[4] = 0x22;
+    pkt[5] = 0x20;
 
     for (let i = 0; i < 6; i++) {
       const selected = document.getElementById(`btn-select-${i}`).value;
@@ -839,9 +983,12 @@
       pkt[12 + i * 4] = bytes[3];
     }
 
-    const reportData = new Uint8Array(pkt.slice(1));
-    await hidDevice.sendReport(0, reportData);
-    alert("Button mappings saved to mouse EEPROM.");
+    try {
+      await hidDevice.sendReport(0, new Uint8Array(pkt.slice(1)));
+      showToast("Button bindings flashed to EEPROM");
+    } catch (err) {
+      showToast("Save buttons failed: " + err.message);
+    }
   }
 
   window.addEventListener("DOMContentLoaded", initUI);
