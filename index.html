@@ -3,23 +3,23 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>AJAZZ AJ139 V2 MC | Gaming Control Center</title>
+  <title>AJAZZ AJ139 V2 MC | Control Center</title>
   <style>
     :root {
-      --bg-base: #0a0c10;
-      --bg-surface: #12161f;
-      --bg-card: #181d28;
-      --bg-card-hover: #1f2533;
-      --border-subtle: #242b3b;
-      --border-focus: #3a455d;
+      --bg-base: #090b10;
+      --bg-surface: #11151f;
+      --bg-card: #171d2b;
+      --bg-card-hover: #1e2638;
+      --border-subtle: #232b3d;
+      --border-focus: #3b4763;
       
       --accent: #ff4b1f;
       --accent-hover: #ff6438;
       --accent-glow: rgba(255, 75, 31, 0.35);
       
-      --text-main: #f0f3f8;
-      --text-muted: #8b95a5;
-      --text-dim: #5c6677;
+      --text-main: #f1f4f9;
+      --text-muted: #8a96a8;
+      --text-dim: #556073;
       
       --success: #00e676;
       --danger: #ff3366;
@@ -27,14 +27,15 @@
       --dpi-glow: #00ff55;
     }
 
-    * { box-sizing: border-box; margin: 0; padding: 0; font-family: "Segoe UI", -apple-system, BlinkMacSystemFont, Roboto, sans-serif; }
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
     body { background-color: var(--bg-base); color: var(--text-main); min-height: 100vh; display: flex; flex-direction: column; }
 
-    /* App Header */
+    /* Top Navigation Bar */
     header {
-      background: var(--bg-surface);
+      background: rgba(17, 21, 31, 0.85);
+      backdrop-filter: blur(12px);
       border-bottom: 1px solid var(--border-subtle);
-      padding: 12px 28px;
+      padding: 14px 32px;
       display: flex;
       justify-content: space-between;
       align-items: center;
@@ -45,18 +46,18 @@
     .brand { display: flex; align-items: center; gap: 14px; }
     .brand-logo { font-size: 16px; font-weight: 800; letter-spacing: 1.5px; color: var(--text-main); text-transform: uppercase; }
     .brand-logo span { color: var(--accent); }
-    .device-tag {
+    .device-pill {
       background: rgba(255, 255, 255, 0.05);
       border: 1px solid var(--border-subtle);
-      padding: 3px 8px;
+      padding: 3px 10px;
       border-radius: 6px;
       font-size: 11px;
       color: var(--text-muted);
       font-weight: 600;
     }
 
-    .header-actions { display: flex; align-items: center; gap: 14px; }
-    .status-pill {
+    .header-right { display: flex; align-items: center; gap: 14px; }
+    .status-badge {
       display: flex;
       align-items: center;
       gap: 8px;
@@ -70,23 +71,21 @@
     .status-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--danger); box-shadow: 0 0 8px var(--danger); }
     .status-dot.active { background: var(--success); box-shadow: 0 0 8px var(--success); }
 
-    .color-swatch-group {
+    .color-swatches {
       display: flex;
-      align-items: center;
       background: var(--bg-card);
       border: 1px solid var(--border-subtle);
       padding: 3px 6px;
       border-radius: 20px;
       gap: 6px;
     }
-    .swatch-btn {
+    .swatch {
       width: 18px; height: 18px; border-radius: 50%; border: 2px solid transparent; cursor: pointer; transition: 0.2s;
     }
-    .swatch-btn.black { background: #111; }
-    .swatch-btn.white { background: #eee; }
-    .swatch-btn.active { border-color: var(--accent); transform: scale(1.15); }
+    .swatch.black { background: #111; }
+    .swatch.white { background: #eee; }
+    .swatch.active { border-color: var(--accent); transform: scale(1.15); }
 
-    /* Buttons */
     .btn {
       background: var(--bg-card);
       color: var(--text-main);
@@ -106,43 +105,34 @@
     .btn.primary:hover { background: var(--accent-hover); box-shadow: 0 0 16px var(--accent-glow); }
 
     /* Main Container */
-    main { width: 100%; max-width: 1100px; margin: 0 auto; padding: 24px 20px 60px; flex: 1; }
+    main { width: 100%; max-width: 1180px; margin: 0 auto; padding: 24px 20px 80px; flex: 1; display: flex; flex-direction: column; gap: 24px; }
 
-    /* Layout Split */
-    .workspace-grid {
-      display: grid;
-      grid-template-columns: 480px 1fr;
-      gap: 24px;
-      align-items: start;
-    }
-
-    /* Interactive Mouse Stage */
-    .stage-card {
-      background: var(--bg-surface);
+    /* Hero Showcase Stage */
+    .hero-stage {
+      background: radial-gradient(circle at 50% 40%, rgba(30, 38, 56, 0.45) 0%, var(--bg-surface) 75%);
       border: 1px solid var(--border-subtle);
-      border-radius: 14px;
-      padding: 16px;
-      position: sticky;
-      top: 80px;
-    }
-    .stage-wrapper {
-      position: relative;
-      width: 100%;
-      height: 480px;
+      border-radius: 18px;
+      padding: 24px;
       display: flex;
-      justify-content: center;
+      flex-direction: column;
       align-items: center;
-      overflow: hidden;
+      position: relative;
     }
-    .stage-canvas { position: relative; width: 460px; height: 460px; }
-    .stage-mouse-img {
-      position: absolute; top: 0; left: 0; width: 460px; height: 460px;
-      object-fit: contain; z-index: 3; filter: drop-shadow(0 14px 28px rgba(0,0,0,0.7));
+    .stage-title-wrap { width: 100%; display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+    .stage-title { font-size: 14px; font-weight: 700; color: var(--text-main); text-transform: uppercase; letter-spacing: 0.8px; }
+    .stage-sub { font-size: 12px; color: var(--text-muted); }
+
+    .stage-viewport { position: relative; width: 680px; height: 500px; display: flex; justify-content: center; align-items: center; }
+    .mouse-canvas { position: relative; width: 500px; height: 500px; }
+    
+    .mouse-img {
+      position: absolute; top: 0; left: 0; width: 500px; height: 500px;
+      object-fit: contain; z-index: 3; filter: drop-shadow(0 16px 32px rgba(0,0,0,0.75));
     }
 
     /* High-Vibrancy DPI Slit LED */
-    .stage-dpi-led {
-      position: absolute; top: 62px; left: 223px; width: 14px; height: 5px;
+    .dpi-slit-led {
+      position: absolute; top: 67px; left: 242px; width: 16px; height: 6px;
       border-radius: 3px; background-color: var(--dpi-glow); z-index: 10;
       border: 1px solid rgba(0, 0, 0, 0.9);
       box-shadow: 0 0 4px #ffffff, 0 0 12px var(--dpi-glow), 0 0 24px var(--dpi-glow), inset 0 0 3px #ffffff;
@@ -150,13 +140,13 @@
     }
 
     /* Radiating Side RGB Strip (4 LEDs per side) */
-    .stage-side-glow {
-      position: absolute; top: 102px; width: 28px; height: 185px; border-radius: 24px;
-      z-index: 2; pointer-events: none; filter: blur(11px); opacity: 0.95; transition: opacity 0.3s;
+    .side-diffuser {
+      position: absolute; top: 110px; width: 30px; height: 200px; border-radius: 26px;
+      z-index: 2; pointer-events: none; filter: blur(12px); opacity: 0.95; transition: opacity 0.3s;
       transform-origin: top center;
     }
-    .stage-side-glow.left { left: 124px; transform: rotate(2deg); }
-    .stage-side-glow.right { right: 124px; transform: rotate(-2deg); }
+    .side-diffuser.left { left: 134px; transform: rotate(2deg); }
+    .side-diffuser.right { right: 134px; transform: rotate(-2deg); }
 
     /* Lighting Animations */
     .glow-wave {
@@ -256,70 +246,97 @@
 
     .glow-off { display: none !important; }
 
-    /* SVG Lines & Button Dropdowns */
-    .stage-svg { position: absolute; top: 0; left: 0; width: 460px; height: 460px; z-index: 5; pointer-events: none; }
+    /* SVG Lines & Floating Anchors */
+    .stage-svg { position: absolute; top: 0; left: 0; width: 500px; height: 500px; z-index: 5; pointer-events: none; }
     .btn-anchor {
-      position: absolute; z-index: 12; display: flex; flex-direction: column; gap: 2px;
-      background: rgba(18, 22, 31, 0.95); border: 1px solid var(--border-subtle);
-      border-radius: 7px; padding: 4px 8px; box-shadow: 0 6px 18px rgba(0,0,0,0.6);
+      position: absolute; z-index: 12; display: flex; flex-direction: column; gap: 3px;
+      background: rgba(18, 22, 31, 0.94); border: 1px solid var(--border-subtle);
+      border-radius: 8px; padding: 6px 10px; box-shadow: 0 8px 24px rgba(0,0,0,0.6);
     }
     .btn-anchor-label { font-size: 10px; font-weight: 700; color: var(--text-dim); text-transform: uppercase; }
     .btn-anchor select {
       background: var(--bg-base); color: var(--text-main); border: 1px solid var(--border-subtle);
-      border-radius: 4px; padding: 3px 5px; font-size: 11px; outline: none;
+      border-radius: 5px; padding: 4px 6px; font-size: 12px; outline: none;
     }
 
-    #anchor-0 { top: 75px; left: -15px; width: 130px; }
-    #anchor-4 { top: 165px; left: -20px; width: 130px; }
-    #anchor-3 { top: 235px; left: -20px; width: 130px; }
-    #anchor-1 { top: 75px; right: -15px; width: 130px; }
-    #anchor-2 { top: 140px; right: -20px; width: 130px; }
-    #anchor-5 { top: 205px; right: -20px; width: 130px; }
+    #anchor-0 { top: 90px; left: -90px; width: 145px; }
+    #anchor-4 { top: 180px; left: -90px; width: 145px; }
+    #anchor-3 { top: 250px; left: -90px; width: 145px; }
+    #anchor-1 { top: 90px; right: -90px; width: 145px; }
+    #anchor-2 { top: 155px; right: -90px; width: 145px; }
+    #anchor-5 { top: 220px; right: -90px; width: 145px; }
 
-    /* Navigation & Content Cards */
-    .nav-tabs {
+    /* Deck Navigation Tabs */
+    .deck-nav {
       display: flex;
       background: var(--bg-surface);
       border: 1px solid var(--border-subtle);
       border-radius: 12px;
       padding: 4px;
-      margin-bottom: 16px;
       gap: 4px;
     }
-    .tab-item {
+    .deck-tab {
       flex: 1;
       background: transparent;
       border: none;
       color: var(--text-muted);
-      padding: 10px 12px;
+      padding: 12px 16px;
       border-radius: 8px;
-      font-size: 12px;
+      font-size: 13px;
       font-weight: 700;
       cursor: pointer;
       display: flex;
       justify-content: center;
       align-items: center;
+      gap: 8px;
       transition: 0.2s;
     }
-    .tab-item:hover { color: var(--text-main); background: rgba(255,255,255,0.03); }
-    .tab-item.active { background: var(--bg-card); color: var(--text-main); border: 1px solid var(--border-subtle); }
+    .deck-tab:hover { color: var(--text-main); background: rgba(255,255,255,0.03); }
+    .deck-tab.active { background: var(--bg-card); color: var(--text-main); border: 1px solid var(--border-subtle); }
 
     .tab-panel { display: none; }
     .tab-panel.active { display: block; }
 
+    /* Content Cards */
     .card {
       background: var(--bg-surface);
       border: 1px solid var(--border-subtle);
       border-radius: 14px;
-      padding: 20px;
-      margin-bottom: 16px;
+      padding: 22px;
     }
-    .card-header { margin-bottom: 14px; }
-    .card-title { font-size: 14px; font-weight: 700; color: var(--text-main); }
-    .card-subtitle { font-size: 12px; color: var(--text-muted); margin-top: 2px; }
+    .card-header { margin-bottom: 16px; display: flex; justify-content: space-between; align-items: flex-start; }
+    .card-title { font-size: 15px; font-weight: 700; color: var(--text-main); }
+    .card-sub { font-size: 12px; color: var(--text-muted); margin-top: 2px; }
 
-    /* Form Rows & Controls */
-    .form-row { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid rgba(255,255,255,0.04); }
+    /* Preset Grid for RGB Studio */
+    .preset-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 14px;
+      margin-bottom: 18px;
+    }
+    .preset-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: 12px;
+      padding: 16px;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      transition: all 0.2s;
+    }
+    .preset-card:hover { border-color: var(--border-focus); transform: translateY(-2px); }
+    .preset-card.active { border-color: var(--accent); background: var(--bg-card-hover); box-shadow: 0 0 16px var(--accent-glow); }
+    
+    .preset-preview-bar {
+      height: 6px; width: 100%; border-radius: 3px; background: #333;
+    }
+    .preset-title { font-size: 13px; font-weight: 700; color: var(--text-main); }
+    .preset-desc { font-size: 11px; color: var(--text-muted); }
+
+    /* Form Rows & Toggles */
+    .form-row { display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px solid rgba(255,255,255,0.04); }
     .form-row:last-child { border-bottom: none; }
     .form-label-wrap { display: flex; flex-direction: column; }
     .form-label { font-size: 13px; font-weight: 600; color: var(--text-main); }
@@ -329,7 +346,7 @@
       display: inline-flex; background: var(--bg-base); border: 1px solid var(--border-subtle); border-radius: 8px; padding: 3px; gap: 4px;
     }
     .segment-opt {
-      background: transparent; border: none; color: var(--text-muted); padding: 6px 14px; border-radius: 6px; font-size: 12px; font-weight: 600; cursor: pointer; transition: 0.2s;
+      background: transparent; border: none; color: var(--text-muted); padding: 6px 16px; border-radius: 6px; font-size: 12px; font-weight: 600; cursor: pointer; transition: 0.2s;
     }
     .segment-opt.active { background: var(--bg-card); color: var(--text-main); border: 1px solid var(--border-subtle); }
 
@@ -337,13 +354,12 @@
     input[type="range"] {
       flex: 1; height: 4px; background: var(--border-subtle); border-radius: 2px; accent-color: var(--accent); outline: none; cursor: pointer;
     }
-    .val-badge { min-width: 70px; text-align: right; font-size: 12px; font-weight: 700; color: var(--accent); }
+    .val-badge { min-width: 75px; text-align: right; font-size: 13px; font-weight: 700; color: var(--accent); }
 
-    /* Modern Toggle */
-    .toggle { position: relative; width: 38px; height: 20px; cursor: pointer; }
+    .toggle { position: relative; width: 40px; height: 22px; cursor: pointer; }
     .toggle input { opacity: 0; width: 0; height: 0; }
     .slider { position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: var(--border-subtle); border-radius: 20px; transition: 0.3s; }
-    .slider:before { position: absolute; content: ""; height: 14px; width: 14px; left: 3px; bottom: 3px; background: #fff; border-radius: 50%; transition: 0.3s; }
+    .slider:before { position: absolute; content: ""; height: 16px; width: 16px; left: 3px; bottom: 3px; background: #fff; border-radius: 50%; transition: 0.3s; }
     .toggle input:checked + .slider { background: var(--accent); }
     .toggle input:checked + .slider:before { transform: translateX(18px); }
 
@@ -351,7 +367,7 @@
     #toast-container { position: fixed; bottom: 24px; right: 24px; z-index: 1000; display: flex; flex-direction: column; gap: 8px; }
     .toast {
       background: var(--bg-surface); border: 1px solid var(--border-focus); color: var(--text-main);
-      padding: 10px 16px; border-radius: 8px; font-size: 12px; font-weight: 600;
+      padding: 12px 18px; border-radius: 8px; font-size: 13px; font-weight: 600;
       box-shadow: 0 10px 30px rgba(0,0,0,0.6); animation: slideIn 0.25s ease forwards;
     }
     @keyframes slideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
@@ -359,217 +375,240 @@
 </head>
 <body>
 
-  <!-- Header -->
+  <!-- Top Bar -->
   <header>
     <div class="brand">
       <div class="brand-logo">AJAZZ <span>AJ139 V2 MC</span></div>
-      <div class="device-tag" id="header-fw">FW: --</div>
+      <div class="device-pill" id="header-fw">FW: --</div>
     </div>
-    <div class="header-actions">
-      <div class="color-swatch-group">
-        <div class="swatch-btn black active" id="swatch-black" onclick="setShellColor('black.png')" title="Black Edition"></div>
-        <div class="swatch-btn white" id="swatch-white" onclick="setShellColor('white.png')" title="White Edition"></div>
+    <div class="header-right">
+      <div class="color-swatches">
+        <div class="swatch black active" id="swatch-black" onclick="setShellColor('black.png')" title="Black Shell"></div>
+        <div class="swatch white" id="swatch-white" onclick="setShellColor('white.png')" title="White Shell"></div>
       </div>
-      <div class="status-pill">
+      <div class="status-badge">
         <div class="status-dot" id="conn-dot"></div>
         <span id="conn-text">Disconnected</span>
         <span id="header-battery" style="color: var(--text-muted); margin-left: 4px;">--%</span>
       </div>
       <button class="btn" onclick="syncHardwareState()">Sync</button>
-      <button class="btn primary" id="btn-connect" onclick="connectDevice()">Connect</button>
+      <button class="btn primary" id="btn-connect" onclick="connectDevice()">Connect Mouse</button>
     </div>
   </header>
 
-  <!-- Workspace -->
   <main>
-    <div class="workspace-grid">
-      <!-- Left Column: Unified Interactive Stage -->
-      <div class="stage-card">
-        <div class="card-header" style="margin-bottom: 6px;">
-          <div class="card-title">Live Hardware Monitor</div>
-          <div class="card-subtitle">Real-time DPI glow and 8-LED streamer lighting visualization.</div>
-        </div>
-        <div class="stage-wrapper">
-          <div class="stage-canvas">
-            <div class="stage-side-glow left glow-off" id="glow-left"></div>
-            <div class="stage-side-glow right glow-off" id="glow-right"></div>
-            <div class="stage-dpi-led" id="live-dpi-led"></div>
-            <img id="mouse-img" src="black.png" alt="Mouse" class="stage-mouse-img">
-            
-            <svg class="stage-svg" viewBox="0 0 460 460">
-              <circle cx="180" cy="120" r="4" fill="#ff4b1f"/>
-              <polyline points="115,98 145,98 180,120" stroke="#ff4b1f" stroke-width="1.5" fill="none"/>
-              <circle cx="132" cy="190" r="4" fill="#ff4b1f"/>
-              <polyline points="110,182 122,182 132,190" stroke="#ff4b1f" stroke-width="1.5" fill="none"/>
-              <circle cx="138" cy="242" r="4" fill="#ff4b1f"/>
-              <polyline points="110,250 128,250 138,242" stroke="#ff4b1f" stroke-width="1.5" fill="none"/>
-              <circle cx="280" cy="120" r="4" fill="#ff4b1f"/>
-              <polyline points="345,98 315,98 280,120" stroke="#ff4b1f" stroke-width="1.5" fill="none"/>
-              <circle cx="230" cy="115" r="4" fill="#ff4b1f"/>
-              <polyline points="350,158 285,158 230,115" stroke="#ff4b1f" stroke-width="1.5" fill="none"/>
-              <circle cx="230" cy="180" r="4" fill="#ff4b1f"/>
-              <polyline points="350,220 285,220 230,180" stroke="#ff4b1f" stroke-width="1.5" fill="none"/>
-            </svg>
-
-            <div class="btn-anchor" id="anchor-0"><span class="btn-anchor-label">1. Left Click</span><select id="btn-select-0"></select></div>
-            <div class="btn-anchor" id="anchor-4"><span class="btn-anchor-label">5. Forward</span><select id="btn-select-4"></select></div>
-            <div class="btn-anchor" id="anchor-3"><span class="btn-anchor-label">4. Backward</span><select id="btn-select-3"></select></div>
-            <div class="btn-anchor" id="anchor-1"><span class="btn-anchor-label">2. Right Click</span><select id="btn-select-1"></select></div>
-            <div class="btn-anchor" id="anchor-2"><span class="btn-anchor-label">3. Middle Click</span><select id="btn-select-2"></select></div>
-            <div class="btn-anchor" id="anchor-5"><span class="btn-anchor-label">6. DPI Button</span><select id="btn-select-5"></select></div>
-          </div>
+    <!-- Central Hero Showcase Stage -->
+    <section class="hero-stage">
+      <div class="stage-title-wrap">
+        <div>
+          <div class="stage-title">Interactive Device Studio</div>
+          <div class="stage-sub">Live telemetry glow, side diffuser simulation, and physical button anchors.</div>
         </div>
       </div>
 
-      <!-- Right Column: Settings Tabs -->
-      <div>
-        <nav class="nav-tabs">
-          <button class="tab-item active" onclick="switchTab('rgb')">RGB Lighting</button>
-          <button class="tab-item" onclick="switchTab('dpi')">DPI Stages</button>
-          <button class="tab-item" onclick="switchTab('keys')">Buttons</button>
-          <button class="tab-item" onclick="switchTab('sensor')">Sensor & Timing</button>
-        </nav>
+      <div class="stage-viewport">
+        <div class="mouse-canvas">
+          <!-- 4-LED Side Diffusers -->
+          <div class="side-diffuser left glow-off" id="glow-left"></div>
+          <div class="side-diffuser right glow-off" id="glow-right"></div>
+          
+          <!-- High-Vibrancy DPI Slit LED -->
+          <div class="dpi-slit-led" id="live-dpi-led" title="Active DPI Stage Glow"></div>
+          
+          <!-- Chassis PNG -->
+          <img id="mouse-img" src="black.png" alt="AJ139" class="mouse-img">
 
-        <!-- Tab: RGB Lighting -->
-        <div class="tab-panel active" id="tab-rgb">
-          <div class="card">
-            <div class="card-header">
-              <div class="card-title">Side Strip Lighting (8 Addressable LEDs)</div>
-              <div class="card-subtitle">Selecting an animation immediately updates the hardware & Web UI preview.</div>
-            </div>
-            <div id="rgb-mode-rows"></div>
-            <div style="display: flex; justify-content: flex-end; margin-top: 14px;">
-              <button class="btn primary" onclick="writeFullConfig()">Save Lighting to EEPROM</button>
-            </div>
+          <!-- Clean SVG Leader Lines -->
+          <svg class="stage-svg" viewBox="0 0 500 500">
+            <!-- Left Click (1) -->
+            <circle cx="195" cy="130" r="4" fill="#ff4b1f"/>
+            <polyline points="90,108 145,108 195,130" stroke="#ff4b1f" stroke-width="1.5" fill="none"/>
+
+            <!-- Forward (5) -->
+            <circle cx="145" cy="205" r="4" fill="#ff4b1f"/>
+            <polyline points="90,198 125,198 145,205" stroke="#ff4b1f" stroke-width="1.5" fill="none"/>
+
+            <!-- Backward (4) -->
+            <circle cx="150" cy="260" r="4" fill="#ff4b1f"/>
+            <polyline points="90,268 128,268 150,260" stroke="#ff4b1f" stroke-width="1.5" fill="none"/>
+
+            <!-- Right Click (2) -->
+            <circle cx="305" cy="130" r="4" fill="#ff4b1f"/>
+            <polyline points="410,108 355,108 305,130" stroke="#ff4b1f" stroke-width="1.5" fill="none"/>
+
+            <!-- Middle Click (3) -->
+            <circle cx="250" cy="125" r="4" fill="#ff4b1f"/>
+            <polyline points="410,172 320,172 250,125" stroke="#ff4b1f" stroke-width="1.5" fill="none"/>
+
+            <!-- DPI Button (6) -->
+            <circle cx="250" cy="195" r="4" fill="#ff4b1f"/>
+            <polyline points="410,238 320,238 250,195" stroke="#ff4b1f" stroke-width="1.5" fill="none"/>
+          </svg>
+
+          <!-- Floating Button Selectors -->
+          <div class="btn-anchor" id="anchor-0"><span class="btn-anchor-label">1. Left Click</span><select id="btn-select-0"></select></div>
+          <div class="btn-anchor" id="anchor-4"><span class="btn-anchor-label">5. Forward</span><select id="btn-select-4"></select></div>
+          <div class="btn-anchor" id="anchor-3"><span class="btn-anchor-label">4. Backward</span><select id="btn-select-3"></select></div>
+          <div class="btn-anchor" id="anchor-1"><span class="btn-anchor-label">2. Right Click</span><select id="btn-select-1"></select></div>
+          <div class="btn-anchor" id="anchor-2"><span class="btn-anchor-label">3. Middle Click</span><select id="btn-select-2"></select></div>
+          <div class="btn-anchor" id="anchor-5"><span class="btn-anchor-label">6. DPI Button</span><select id="btn-select-5"></select></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Deck Navigation -->
+    <nav class="deck-nav">
+      <button class="deck-tab active" onclick="switchTab('rgb')">RGB Lighting Studio</button>
+      <button class="deck-tab" onclick="switchTab('dpi')">DPI & Performance</button>
+      <button class="deck-tab" onclick="switchTab('keys')">Button Remapping</button>
+      <button class="deck-tab" onclick="switchTab('sensor')">Sensor & Timing</button>
+    </nav>
+
+    <!-- Tab 1: RGB Lighting Studio -->
+    <div class="tab-panel active" id="tab-rgb">
+      <div class="card">
+        <div class="card-header">
+          <div>
+            <div class="card-title">Addressable Streamer Lighting Presets</div>
+            <div class="card-sub">Select any preset below to trigger real-time preview and flash to memory.</div>
+          </div>
+          <button class="btn primary" onclick="writeFullConfig()">Save Lighting to EEPROM</button>
+        </div>
+        <div class="preset-grid" id="preset-grid"></div>
+      </div>
+    </div>
+
+    <!-- Tab 2: DPI & Performance -->
+    <div class="tab-panel" id="tab-dpi">
+      <div class="card" style="margin-bottom: 20px;">
+        <div class="card-header">
+          <div>
+            <div class="card-title">Report Rate (Polling Frequency)</div>
+            <div class="card-sub">Host communication frequency over 2.4G wireless or USB.</div>
+          </div>
+        </div>
+        <div class="segmented-control" id="poll-control">
+          <button class="segment-opt" onclick="setPolling(125)">125 Hz</button>
+          <button class="segment-opt" onclick="setPolling(250)">250 Hz</button>
+          <button class="segment-opt" onclick="setPolling(500)">500 Hz</button>
+          <button class="segment-opt active" onclick="setPolling(1000)">1000 Hz</button>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <div>
+            <div class="card-title">DPI Sensitivity Stages</div>
+            <div class="card-sub">Assign sensitivity curves and live LED indicator colors (50 - 12,000 DPI).</div>
+          </div>
+          <button class="btn primary" onclick="writeFullConfig()">Save Performance Settings</button>
+        </div>
+        <div id="dpi-stage-rows"></div>
+      </div>
+    </div>
+
+    <!-- Tab 3: Button Remapping -->
+    <div class="tab-panel" id="tab-keys">
+      <div class="card">
+        <div class="card-header">
+          <div>
+            <div class="card-title">Physical Switch Remapping</div>
+            <div class="card-sub">Configure key bindings using the floating selectors in the stage viewer above.</div>
+          </div>
+          <button class="btn primary" onclick="writeButtonMappings()">Save Button Mappings</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tab 4: Sensor & Timing -->
+    <div class="tab-panel" id="tab-sensor">
+      <div class="card">
+        <div class="card-header">
+          <div>
+            <div class="card-title">Optical Sensor Enhancements</div>
+            <div class="card-sub">Configure PAW optical engine flags, liftoff distance, and debounce timers.</div>
+          </div>
+          <button class="btn primary" onclick="writeFullConfig()">Save Advanced Settings</button>
+        </div>
+
+        <div class="form-row">
+          <div class="form-label-wrap">
+            <div class="form-label">Motion Sync</div>
+            <div class="form-desc">Synchronizes optical frame acquisitions with USB poll intervals.</div>
+          </div>
+          <label class="toggle"><input type="checkbox" id="chk-motion-sync" checked><span class="slider"></span></label>
+        </div>
+
+        <div class="form-row">
+          <div class="form-label-wrap">
+            <div class="form-label">Ripple Control</div>
+            <div class="form-desc">Real-time path trajectory smoothing at high DPI levels.</div>
+          </div>
+          <label class="toggle"><input type="checkbox" id="chk-ripple"><span class="slider"></span></label>
+        </div>
+
+        <div class="form-row">
+          <div class="form-label-wrap">
+            <div class="form-label">Angle Snapping / Line Correction</div>
+            <div class="form-desc">Predictive linear trajectory assist.</div>
+          </div>
+          <label class="toggle"><input type="checkbox" id="chk-linesnap"><span class="slider"></span></label>
+        </div>
+
+        <div class="form-row">
+          <div class="form-label-wrap">
+            <div class="form-label">Esports High-Speed Tracking Mode</div>
+            <div class="form-desc">Maintains high-voltage MCU sensor rails for zero latency.</div>
+          </div>
+          <label class="toggle"><input type="checkbox" id="chk-esports"><span class="slider"></span></label>
+        </div>
+
+        <div class="form-row">
+          <div class="form-label-wrap">
+            <div class="form-label">Lift-Off Distance (LOD)</div>
+            <div class="form-desc">Optical tracking cutoff height.</div>
+          </div>
+          <div class="segmented-control" id="lod-control">
+            <button class="segment-opt active" onclick="setLOD(1)">1 mm</button>
+            <button class="segment-opt" onclick="setLOD(2)">2 mm</button>
           </div>
         </div>
 
-        <!-- Tab: DPI Stages -->
-        <div class="tab-panel" id="tab-dpi">
-          <div class="card">
-            <div class="card-header">
-              <div class="card-title">Report Rate (Polling Frequency)</div>
-              <div class="card-subtitle">USB/2.4G polling frequency.</div>
-            </div>
-            <div class="segmented-control" id="poll-control">
-              <button class="segment-opt" onclick="setPolling(125)">125 Hz</button>
-              <button class="segment-opt" onclick="setPolling(250)">250 Hz</button>
-              <button class="segment-opt" onclick="setPolling(500)">500 Hz</button>
-              <button class="segment-opt active" onclick="setPolling(1000)">1000 Hz</button>
-            </div>
+        <div class="form-row">
+          <div class="form-label-wrap">
+            <div class="form-label">Switch Debounce Response Time</div>
+            <div class="form-desc">Contact debounce filtering (0 to 20 ms).</div>
           </div>
-
-          <div class="card">
-            <div class="card-header">
-              <div class="card-title">DPI Stages & High-Contrast LED Colors</div>
-              <div class="card-subtitle">Select active stage or adjust sensitivity values (50 - 12,000 DPI).</div>
-            </div>
-            <div id="dpi-stage-rows"></div>
-            <div style="display: flex; justify-content: flex-end; margin-top: 14px;">
-              <button class="btn primary" onclick="writeFullConfig()">Save Performance Settings</button>
-            </div>
+          <div class="slider-wrap" style="max-width: 260px;">
+            <input type="range" id="rng-debounce" min="0" max="20" value="8" oninput="document.getElementById('lbl-debounce').innerText = this.value + ' ms'">
+            <span class="val-badge" id="lbl-debounce">8 ms</span>
           </div>
         </div>
 
-        <!-- Tab: Buttons -->
-        <div class="tab-panel" id="tab-keys">
-          <div class="card">
-            <div class="card-header">
-              <div class="card-title">Button Remapping</div>
-              <div class="card-subtitle">Use the visual selectors on the left mouse stage to remap buttons.</div>
-            </div>
-            <div style="display: flex; justify-content: flex-end; margin-top: 14px;">
-              <button class="btn primary" onclick="writeButtonMappings()">Save Button Mappings</button>
-            </div>
+        <div class="form-row">
+          <div class="form-label-wrap">
+            <div class="form-label">Inactivity Sleep Timeout</div>
+            <div class="form-desc">Minutes before entering low-power RF standby (0 = Never).</div>
+          </div>
+          <div class="slider-wrap" style="max-width: 260px;">
+            <input type="range" id="rng-sleep" min="0" max="60" value="10" oninput="document.getElementById('lbl-sleep').innerText = this.value === '0' ? 'Never' : this.value + ' min'">
+            <span class="val-badge" id="lbl-sleep">10 min</span>
           </div>
         </div>
 
-        <!-- Tab: Sensor & Timing -->
-        <div class="tab-panel" id="tab-sensor">
-          <div class="card">
-            <div class="card-header">
-              <div class="card-title">Sensor Enhancements</div>
-              <div class="card-subtitle">Tracking algorithms and power rails.</div>
-            </div>
-            
-            <div class="form-row">
-              <div class="form-label-wrap">
-                <div class="form-label">Motion Sync</div>
-                <div class="form-desc">Synchronize sensor reads with USB polls.</div>
-              </div>
-              <label class="toggle"><input type="checkbox" id="chk-motion-sync" checked><span class="slider"></span></label>
-            </div>
-
-            <div class="form-row">
-              <div class="form-label-wrap">
-                <div class="form-label">Ripple Control</div>
-                <div class="form-desc">Smoothing algorithm for high DPI.</div>
-              </div>
-              <label class="toggle"><input type="checkbox" id="chk-ripple"><span class="slider"></span></label>
-            </div>
-
-            <div class="form-row">
-              <div class="form-label-wrap">
-                <div class="form-label">Angle Snapping / Line Correction</div>
-              </div>
-              <label class="toggle"><input type="checkbox" id="chk-linesnap"><span class="slider"></span></label>
-            </div>
-
-            <div class="form-row">
-              <div class="form-label-wrap">
-                <div class="form-label">Esports High-Speed Tracking Mode</div>
-              </div>
-              <label class="toggle"><input type="checkbox" id="chk-esports"><span class="slider"></span></label>
-            </div>
-
-            <div class="form-row">
-              <div class="form-label-wrap">
-                <div class="form-label">Lift-Off Distance (LOD)</div>
-              </div>
-              <div class="segmented-control" id="lod-control">
-                <button class="segment-opt active" onclick="setLOD(1)">1 mm</button>
-                <button class="segment-opt" onclick="setLOD(2)">2 mm</button>
-              </div>
-            </div>
-
-            <div class="form-row">
-              <div class="form-label-wrap">
-                <div class="form-label">Button Debounce Delay</div>
-              </div>
-              <div class="slider-wrap" style="max-width: 240px;">
-                <input type="range" id="rng-debounce" min="0" max="20" value="8" oninput="document.getElementById('lbl-debounce').innerText = this.value + ' ms'">
-                <span class="val-badge" id="lbl-debounce">8 ms</span>
-              </div>
-            </div>
-
-            <div class="form-row">
-              <div class="form-label-wrap">
-                <div class="form-label">Inactivity Sleep Timeout</div>
-              </div>
-              <div class="slider-wrap" style="max-width: 240px;">
-                <input type="range" id="rng-sleep" min="0" max="60" value="10" oninput="document.getElementById('lbl-sleep').innerText = this.value === '0' ? 'Never' : this.value + ' min'">
-                <span class="val-badge" id="lbl-sleep">10 min</span>
-              </div>
-            </div>
-
-            <div class="form-row">
-              <div class="form-label-wrap">
-                <div class="form-label">Invert Scroll Wheel Direction</div>
-              </div>
-              <label class="toggle"><input type="checkbox" id="chk-invert-scroll"><span class="slider"></span></label>
-            </div>
-
-            <div class="form-row">
-              <div class="form-label-wrap">
-                <div class="form-label">Move to Wake</div>
-              </div>
-              <label class="toggle"><input type="checkbox" id="chk-move-wake" checked><span class="slider"></span></label>
-            </div>
-
-            <div style="display: flex; justify-content: flex-end; margin-top: 14px;">
-              <button class="btn primary" onclick="writeFullConfig()">Save Advanced Settings</button>
-            </div>
+        <div class="form-row">
+          <div class="form-label-wrap">
+            <div class="form-label">Invert Scroll Wheel Direction</div>
           </div>
+          <label class="toggle"><input type="checkbox" id="chk-invert-scroll"><span class="slider"></span></label>
+        </div>
+
+        <div class="form-row">
+          <div class="form-label-wrap">
+            <div class="form-label">Move to Wake</div>
+            <div class="form-desc">Wake mouse by sensor displacement rather than button click.</div>
+          </div>
+          <label class="toggle"><input type="checkbox" id="chk-move-wake" checked><span class="slider"></span></label>
         </div>
       </div>
     </div>
@@ -618,13 +657,13 @@
   ];
 
   const STREAMER_MODES = [
-    { label: "Wave / Streamer (波浪流光)", val: 0, class: "glow-wave" },
-    { label: "Neon Spectrum Cycle (霓虹幻彩)", val: 1, class: "glow-neon" },
-    { label: "Touring Chaser (跑马灯)", val: 2, class: "glow-chaser" },
-    { label: "Yo-Yo Bouncing Ball (悠悠球)", val: 3, class: "glow-yoyo" },
-    { label: "Directional Flow (单向流动)", val: 4, class: "glow-flow" },
-    { label: "Color Cycle Breathing (幻彩呼吸)", val: 5, class: "glow-breathing" },
-    { label: "Turn Off Side Strip (关闭灯光)", val: 6, class: "glow-off" }
+    { label: "Wave / Streamer", desc: "Fluid reverse rainbow wave animation", val: 0, class: "glow-wave", preview: "linear-gradient(90deg, #ff0044, #cc00ff, #0055ff, #00ff55, #ffaa00)" },
+    { label: "Neon Spectrum", desc: "Full spectrum simultaneous color cycle", val: 1, class: "glow-neon", preview: "linear-gradient(90deg, #ff0033, #ffee00, #00ff55, #0088ff, #ee00ff)" },
+    { label: "Touring Chaser", desc: "Fast Christmas chaser with 2.2s rebound", val: 2, class: "glow-chaser", preview: "repeating-linear-gradient(90deg, #ff0044 0px, #ff0044 6px, transparent 6px, transparent 12px, #00ff55 12px, #00ff55 18px)" },
+    { label: "Yo-Yo Bouncing Ball", desc: "Fast top-to-bottom color wipe per cycle", val: 3, class: "glow-yoyo", preview: "linear-gradient(90deg, #00f0ff, transparent)" },
+    { label: "Directional Flow", desc: "4-LED top-to-bottom sequential cascade", val: 4, class: "glow-flow", preview: "linear-gradient(90deg, #ff0044, #00f0ff, #ffee00)" },
+    { label: "Color Cycle Breathing", desc: "Super slow relaxed 28s breath cycle", val: 5, class: "glow-breathing", preview: "linear-gradient(90deg, #ff0044, #00f0ff)" },
+    { label: "Turn Off Side Strip", desc: "Completely disable side streamer LEDs", val: 6, class: "glow-off", preview: "#222" }
   ];
 
   let hidDevice = null;
@@ -651,7 +690,7 @@
   }
 
   function switchTab(tabId) {
-    document.querySelectorAll(".tab-item").forEach(b => b.classList.remove("active"));
+    document.querySelectorAll(".deck-tab").forEach(b => b.classList.remove("active"));
     document.querySelectorAll(".tab-panel").forEach(p => p.classList.remove("active"));
     event.currentTarget.classList.add("active");
     document.getElementById(`tab-${tabId}`).classList.add("active");
@@ -670,11 +709,12 @@
   function handleLightingModeChange(modeVal) {
     activeStreamerMode = parseInt(modeVal);
     const item = STREAMER_MODES.find(m => m.val === activeStreamerMode) || STREAMER_MODES[6];
-    document.getElementById("glow-left").className = `stage-side-glow left ${item.class}`;
-    document.getElementById("glow-right").className = `stage-side-glow right ${item.class}`;
+    document.getElementById("glow-left").className = `side-diffuser left ${item.class}`;
+    document.getElementById("glow-right").className = `side-diffuser right ${item.class}`;
     
-    const r = document.querySelector(`input[name="streamer_mode"][value="${activeStreamerMode}"]`);
-    if (r) r.checked = true;
+    document.querySelectorAll(".preset-card").forEach((card, idx) => {
+      card.classList.toggle("active", STREAMER_MODES[idx].val === activeStreamerMode);
+    });
   }
 
   function setPolling(rate) {
@@ -694,6 +734,21 @@
   function initUI() {
     const savedShell = localStorage.getItem("aj139_mouse_shell") || "black.png";
     setShellColor(savedShell);
+
+    // Build Preset Cards for RGB Studio
+    const presetGrid = document.getElementById("preset-grid");
+    presetGrid.innerHTML = "";
+    STREAMER_MODES.forEach(m => {
+      presetGrid.innerHTML += `
+        <div class="preset-card ${m.val === activeStreamerMode ? "active" : ""}" onclick="testStreamerMode(${m.val})">
+          <div class="preset-preview-bar" style="background: ${m.preview};"></div>
+          <div>
+            <div class="preset-title">${m.label}</div>
+            <div class="preset-desc">${m.desc}</div>
+          </div>
+        </div>
+      `;
+    });
 
     // Build DPI Rows
     const dpiContainer = document.getElementById("dpi-stage-rows");
@@ -716,22 +771,7 @@
       `;
     }
 
-    // Build RGB Rows
-    const rgbContainer = document.getElementById("rgb-mode-rows");
-    rgbContainer.innerHTML = "";
-    STREAMER_MODES.forEach(m => {
-      rgbContainer.innerHTML += `
-        <div class="form-row">
-          <label style="display:flex; align-items:center; gap:10px; cursor:pointer;">
-            <input type="radio" name="streamer_mode" value="${m.val}" ${m.val === activeStreamerMode ? "checked" : ""} onchange="testStreamerMode(${m.val})">
-            <span style="font-size:13px; font-weight:600;">${m.label}</span>
-          </label>
-          <button class="btn" style="padding:4px 12px; font-size:12px;" onclick="testStreamerMode(${m.val})">Select</button>
-        </div>
-      `;
-    });
-
-    // Populate Buttons
+    // Populate Button Anchors
     const optionsHtml = Object.keys(KEY_BINDINGS).map(k => `<option value="${k}">${k}</option>`).join("");
     for (let i = 0; i < 6; i++) {
       const el = document.getElementById(`btn-select-${i}`);
@@ -748,7 +788,7 @@
     handleLightingModeChange(activeStreamerMode);
   }
 
-  // --- WebHID Direct Transaction Helper ---
+  // --- WebHID Transaction Engine ---
   function transact(sendPkt, matchFn, timeoutMs = 300) {
     return new Promise(async (resolve) => {
       if (!hidDevice || !hidDevice.opened) return resolve(null);
@@ -777,36 +817,31 @@
     });
   }
 
-  function setupGlobalReportListener() {
+  // --- Real-time Hardware Interrupt Dispatcher ---
+  function setupHardwareListener() {
     if (!hidDevice) return;
     hidDevice.oninputreport = (event) => {
       const data = new Uint8Array(event.data.buffer);
 
-      // Only parse explicit hardware state broadcasts
       if (data[0] === 0xAA) {
-        // DPI Stage Switch push
+        // 1. Physical DPI Button press notification
         if (data[1] === 0xFA && data[8] === 0x10) {
           const newDpiStage = data[9] - 1;
           const rateMap = { 0: 125, 1: 250, 2: 500, 3: 1000 };
           updateDpiLedGlow(newDpiStage);
           setPolling(rateMap[data[10] - 1] || 1000);
         }
-        // Battery Report push
+        // 2. Battery telemetry report
         else if (data[1] === 0x30) {
           document.getElementById("header-battery").innerText = `${data[8]}% ${data[9] ? "(⚡)" : ""}`;
         }
-        // Physical RGB Switch push (Handles 0xAA 0x21 or 0xAA 0xFA)
-        else if (data[1] === 0x21) {
-          // Accurate offset matching outgoing packet payload
-          const mode = data[10] <= 6 ? data[10] : (data[8] <= 6 ? data[8] : data[9]);
-          if (mode >= 0 && mode <= 6) {
-            handleLightingModeChange(mode);
-          }
-        }
-        else if (data[1] === 0xFA && (data[8] === 0x20 || data[8] === 0x21 || data[8] === 0x03)) {
-          const mode = data[9] <= 6 ? data[9] : data[10];
-          if (mode >= 0 && mode <= 6) {
-            handleLightingModeChange(mode);
+        // 3. Physical RGB Button press notification (all firmware variants)
+        else if (data[1] === 0x21 || (data[1] === 0xFA && (data[8] === 0x21 || data[8] === 0x20 || data[8] === 0x03))) {
+          for (let idx of [11, 10, 9, 8]) {
+            if (data[idx] !== undefined && data[idx] >= 0 && data[idx] <= 6) {
+              handleLightingModeChange(data[idx]);
+              break;
+            }
           }
         }
       }
@@ -815,7 +850,7 @@
 
   async function connectDevice() {
     if (!navigator.hid) {
-      alert("WebHID is not supported. Please use Chrome, Edge, or Brave.");
+      alert("WebHID is not supported. Please use Chrome, Edge, Brave, or Opera.");
       return;
     }
     try {
@@ -828,61 +863,59 @@
       const isWireless = hidDevice.vendorId === 0xA8A5;
       document.getElementById("conn-text").innerText = isWireless ? "2.4G Wireless" : "USB Wired";
       
-      setupGlobalReportListener();
+      setupHardwareListener();
       await syncHardwareState();
       showToast("Connected to AJ139 V2 MC");
     } catch (err) {
-      console.error("Connect failed:", err);
-      showToast("Connection failed: " + err.message);
+      console.error("Connection error:", err);
+      showToast("Failed to connect: " + err.message);
     }
   }
 
   async function syncHardwareState() {
     if (!hidDevice || !hidDevice.opened) return;
 
-    // 1. Query Config (Cmd 0x0E)
+    // 1. Query Config (Cmd 0x0E)[cite: 1]
     const cfgPacket = new Array(65).fill(0);
     cfgPacket[1] = 0x55; cfgPacket[2] = 0x0E; cfgPacket[3] = 0xA5; cfgPacket[4] = 0x0B; cfgPacket[5] = 0x30;
     cfgPacket[6] = 0x01; cfgPacket[7] = 0x01; cfgPacket[8] = 0x01;
     const cfgRes = await transact(cfgPacket, d => d[0] === 0xAA && d[1] === 0x0E);
 
-    // 2. Query Buttons (Cmd 0x08)
+    // 2. Query Buttons (Cmd 0x08)[cite: 1]
     const keyPacket = new Array(65).fill(0);
     keyPacket[1] = 0x55; keyPacket[2] = 0x08; keyPacket[3] = 0xA5; keyPacket[4] = 0x0B; keyPacket[5] = 0x20;
     const keyRes = await transact(keyPacket, d => d[0] === 0xAA && d[1] === 0x08);
 
-    // 3. Query Battery (Cmd 0x30)
+    // 3. Query Battery (Cmd 0x30)[cite: 1]
     const batPacket = new Array(65).fill(0);
     batPacket[1] = 0x55; batPacket[2] = 0x30; batPacket[3] = 0xA5; batPacket[4] = 0x0B; batPacket[5] = 0x2E;
     batPacket[6] = 0x01; batPacket[7] = 0x01; batPacket[8] = 0x01;
     const batRes = await transact(batPacket, d => d[0] === 0xAA && d[1] === 0x30);
 
-    // 4. Query Firmware (Cmd 0x03)
+    // 4. Query Firmware (Cmd 0x03)[cite: 1]
     const fwPacket = new Array(65).fill(0);
     fwPacket[1] = 0x55; fwPacket[2] = 0x03;
     const fwRes = await transact(fwPacket, d => d.length >= 26);
 
     if (fwRes && fwRes.length >= 26) {
-      document.getElementById("header-fw").innerText = `FW: ${String.fromCharCode(fwRes[23])}.${String.fromCharCode(fwRes[24])}.${String.fromCharCode(fwRes[25])}`;
+      document.getElementById("header-fw").innerText = `FW: ${String.fromCharCode(fwRes[23])}.${String.fromCharCode(fwRes[24])}.${String.fromCharCode(fwRes[25])}`;[cite: 1]
     }
     if (batRes && batRes[0] === 0xAA) {
-      document.getElementById("header-battery").innerText = `${batRes[8]}% ${batRes[9] ? "(⚡)" : ""}`;
+      document.getElementById("header-battery").innerText = `${batRes[8]}% ${batRes[9] ? "(⚡)" : ""}`;[cite: 1]
     }
 
     if (cfgRes && cfgRes.length >= 55) {
-      // Decode Light Mode directly from byte 9
+      // Correct Light Mode decode directly from byte 9[cite: 1]
       const hwMode = (cfgRes[9] >= 0 && cfgRes[9] <= 6) ? cfgRes[9] : 6;
       handleLightingModeChange(hwMode);
 
-      // Decode Polling Rate
       const rateMap = { 0: 125, 1: 250, 2: 500, 3: 1000 };
-      setPolling(rateMap[cfgRes[10] - 1] || 1000);
+      setPolling(rateMap[cfgRes[10] - 1] || 1000);[cite: 1]
 
-      // Decode DPI
-      activeDpiIndex = Math.max(0, cfgRes[12] - 1);
+      activeDpiIndex = Math.max(0, cfgRes[12] - 1);[cite: 1]
       updateDpiLedGlow(activeDpiIndex);
       for (let i = 0; i < 6; i++) {
-        const dpi = cfgRes[13 + i * 2] | (cfgRes[14 + i * 2] << 8);
+        const dpi = cfgRes[13 + i * 2] | (cfgRes[14 + i * 2] << 8);[cite: 1]
         if (dpi > 0) {
           currentDpis[i] = dpi;
           document.getElementById(`dpi-rng-${i}`).value = dpi;
@@ -890,26 +923,25 @@
         }
       }
 
-      // Sensor Flags
-      const sensorFlag = cfgRes[50];
-      document.getElementById("chk-motion-sync").checked = !!(sensorFlag & 0x20);
-      document.getElementById("chk-ripple").checked = !!(sensorFlag & 0x10);
-      document.getElementById("chk-linesnap").checked = !!(sensorFlag & 0x01);
-      document.getElementById("chk-esports").checked = !!(cfgRes[53] & 0x01);
+      const sensorFlag = cfgRes[50];[cite: 1]
+      document.getElementById("chk-motion-sync").checked = !!(sensorFlag & 0x20);[cite: 1]
+      document.getElementById("chk-ripple").checked = !!(sensorFlag & 0x10);[cite: 1]
+      document.getElementById("chk-linesnap").checked = !!(sensorFlag & 0x01);[cite: 1]
+      document.getElementById("chk-esports").checked = !!(cfgRes[53] & 0x01);[cite: 1]
 
-      setLOD(cfgRes[49] === 2 ? 2 : 1);
-      document.getElementById("rng-debounce").value = cfgRes[51];
+      setLOD(cfgRes[49] === 2 ? 2 : 1);[cite: 1]
+      document.getElementById("rng-debounce").value = cfgRes[51];[cite: 1]
       document.getElementById("lbl-debounce").innerText = cfgRes[51] + " ms";
-      document.getElementById("rng-sleep").value = cfgRes[52];
+      document.getElementById("rng-sleep").value = cfgRes[52];[cite: 1]
       document.getElementById("lbl-sleep").innerText = cfgRes[52] === 0 ? "Never" : cfgRes[52] + " min";
-      document.getElementById("chk-invert-scroll").checked = !!cfgRes[48];
-      document.getElementById("chk-move-wake").checked = !!(cfgRes[54] & 0x01);
+      document.getElementById("chk-invert-scroll").checked = !!cfgRes[48];[cite: 1]
+      document.getElementById("chk-move-wake").checked = !!(cfgRes[54] & 0x01);[cite: 1]
     }
 
     if (keyRes && keyRes.length >= 32) {
-      const kData = keyRes.slice(8);
+      const kData = keyRes.slice(8);[cite: 1]
       for (let i = 0; i < 6; i++) {
-        const t = kData[4 * i], c1 = kData[4 * i + 1], c2 = kData[4 * i + 2], c3 = kData[4 * i + 3];
+        const t = kData[4 * i], c1 = kData[4 * i + 1], c2 = kData[4 * i + 2], c3 = kData[4 * i + 3];[cite: 1]
         const select = document.getElementById(`btn-select-${i}`);
         for (const [name, bytes] of Object.entries(KEY_BINDINGS)) {
           if (bytes[0] === t && bytes[1] === c1 && bytes[2] === c2 && bytes[3] === c3) {
@@ -933,7 +965,7 @@
       livePacket[11] = activeStreamerMode;
       await hidDevice.sendReport(0, new Uint8Array(livePacket.slice(1)));
     } catch (e) {
-      console.warn("Live test failed:", e);
+      console.warn("Live test error:", e);
     }
   }
 
